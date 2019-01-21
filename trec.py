@@ -4,17 +4,17 @@ import mlfunc
 
 
 '''
-NEXT: 
+NEXT:
 -debug
 -implement regularization for cost function
 -remove hardcodings from data read & array sizes
 '''
 
 
-X = read_data("train-images.idx3-ubyte", 16)
-Y = read_data("train-labels.idx1-ubyte", 8)
-X_test = read_data("t10k-images.idx3-ubyte", 16)
-Y_test = read_data("t10k-labels.idx1-ubyte", 8)
+X = read_data('train-images.idx3-ubyte', 16)
+Y = read_data('train-labels.idx1-ubyte', 8)
+X_test = read_data('t10k-images.idx3-ubyte', 16)
+Y_test = read_data('t10k-labels.idx1-ubyte', 8)
 
 X = X/255
 X_test = X_test/255
@@ -40,14 +40,14 @@ Y_test = mlfunc.labels_to_vectors(Y_test)
 
 weight_params = mlfunc.init_params()
 
-for i in range(500):
+for i in range(20):
     cache_params = mlfunc.forward_propagation(X, weight_params)
-    cost = mlfunc.compute_cost(Y, cache_params["A2"])
-    #print("\nCost: " + str(cost))
+    cost = mlfunc.compute_cost(Y, cache_params['A2'])
+    #print('\nCost: ' + str(cost))
     gradient_params = mlfunc.backward_propagation(X, Y, weight_params, cache_params)
     weight_params = mlfunc.update_params(weight_params, gradient_params)
-    
-    if i % 10 == 0:
-        print("Cost: " + str(cost))
+
+    if i % 5 == 0:
+        print('Cost: ' + str(cost))
 
     mlfunc.check_accuracy(X, Y, weight_params)

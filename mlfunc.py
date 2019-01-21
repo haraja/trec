@@ -93,7 +93,7 @@ def init_params():
     #b1 = np.random.rand(n_h, 1)
     #b2 = np.random.rand(n_y, 1)
 
-    weight_params = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
+    weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
 
     return weight_params
 
@@ -109,17 +109,17 @@ def forward_propagation(X, weight_params):
     y_hat...
     '''
 
-    W1 = weight_params["W1"]
-    b1 = weight_params["b1"]
-    W2 = weight_params["W2"]
-    b2 = weight_params["b2"]
+    W1 = weight_params['W1']
+    b1 = weight_params['b1']
+    W2 = weight_params['W2']
+    b2 = weight_params['b2']
 
     Z1 = np.dot(W1, X) + b1
     A1 = sigmoid(Z1)
     Z2 = np.dot(W2, A1) + b2
     A2 = sigmoid(Z2)
 
-    cache_params = {"Z1": Z1, "A1": A1, "Z2": Z2, "A2": A2}
+    cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
 
     return cache_params
 
@@ -139,7 +139,7 @@ def compute_cost(Y, A):
 
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1-A), (1-Y))
     cost = -1/m * np.sum(log_calc)
-    # print("compute_cost::cost " + str(cost))
+    # print('compute_cost::cost ' + str(cost))
 
     return cost
 
@@ -160,12 +160,12 @@ def backward_propagation(X, Y, weight_params, cache_params):
     m = Y.shape[1]  # Number or y-units (0..9)
 
     # Get weights parameters from forward propagations
-    W1 = weight_params["W1"]
-    W2 = weight_params["W2"]
+    W1 = weight_params['W1']
+    W2 = weight_params['W2']
 
     # Get activation parameters
-    A1 = cache_params["A1"]
-    A2 = cache_params["A2"]
+    A1 = cache_params['A1']
+    A2 = cache_params['A2']
 
     # Calculate derivatives
     dZ2 = A2 - Y
@@ -178,7 +178,7 @@ def backward_propagation(X, Y, weight_params, cache_params):
     # NOTE: right now using sigmoid activation function is all layers.
     # If different activation functions would be used, then dZx would also need to change
 
-    gradient_params = {"dW1": dW1, "db1": db1, "dW2": dW2, "db2": db2}
+    gradient_params = {'dW1': dW1, 'db1': db1, 'dW2': dW2, 'db2': db2}
 
     return gradient_params
 
@@ -197,16 +197,16 @@ def update_params(weight_params, gradient_params):
     learning_rate = 1.2
 
     # Get weights parameters
-    W1 = weight_params["W1"]
-    b1 = weight_params["b1"]
-    W2 = weight_params["W2"]
-    b2 = weight_params["b2"]
+    W1 = weight_params['W1']
+    b1 = weight_params['b1']
+    W2 = weight_params['W2']
+    b2 = weight_params['b2']
 
     # Get gradient parameters
-    dW1 = gradient_params["dW1"]
-    db1 = gradient_params["db1"]
-    dW2 = gradient_params["dW2"]
-    db2 = gradient_params["db2"]
+    dW1 = gradient_params['dW1']
+    db1 = gradient_params['db1']
+    dW2 = gradient_params['dW2']
+    db2 = gradient_params['db2']
 
     # Update weight parameters
     W1 = W1 - dW1 * learning_rate
@@ -214,7 +214,7 @@ def update_params(weight_params, gradient_params):
     W2 = W2 - dW2 * learning_rate
     b2 = b2 - db2 * learning_rate
 
-    weight_params = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
+    weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
 
     return weight_params
 
@@ -228,17 +228,17 @@ def check_accuracy(X, Y, weight_params):
     Y_predictions = np.zeros((1, m))
 
     cache_params = forward_propagation(X, weight_params)
-    A2 = cache_params["A2"]
+    A2 = cache_params['A2']
     A2_labels = vectors_to_labels(A2)
 
     predict_vector = np.argmax(A2, axis = 0)
     predict_vector.shape = (1, m)
     '''
-    print("A2:")
+    print('A2:')
     print(A2.shape)
     for i in range(10):
         print(A2[i, 5000])
-    print("predict_vector:")
+    print('predict_vector:')
     print(predict_vector.shape)
     print(predict_vector)
     '''
