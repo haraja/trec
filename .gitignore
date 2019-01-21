@@ -1,0 +1,7 @@
+# Data files
+data/
+*ubyte
+
+# Other files
+__pycache__/
+test_trec.py
