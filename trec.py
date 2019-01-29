@@ -35,19 +35,19 @@ Y_test.shape = (1, Y_test.size)
 #show_number(X, Y, np.random.randint(0, Y.size))
 
 # shape the output from labels to arrays
-Y = mlfunc.labels_to_vectors(Y)
-Y_test = mlfunc.labels_to_vectors(Y_test)
+Y = mlfunc.convert_to_one_hot(Y)
+Y_test = mlfunc.convert_to_one_hot(Y_test)
 
 weight_params = mlfunc.init_params()
 
-for i in range(20):
+for i in range(100):
     cache_params = mlfunc.forward_propagation(X, weight_params)
     cost = mlfunc.compute_cost(Y, cache_params['A2'])
     #print('\nCost: ' + str(cost))
     gradient_params = mlfunc.backward_propagation(X, Y, weight_params, cache_params)
     weight_params = mlfunc.update_params(weight_params, gradient_params)
 
-    if i % 5 == 0:
+    if i % 10 == 0:
         print('Cost: ' + str(cost))
 
-    mlfunc.check_accuracy(X, Y, weight_params)
+mlfunc.check_accuracy(X, Y, weight_params)

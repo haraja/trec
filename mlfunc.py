@@ -13,28 +13,34 @@ def sigmoid(Z):
     Z -- real value / matrix
 
     Returns:
-    float number, activation with sigmoid function
+    float number / matrix, activation with sigmoid function
     '''
 
     return 1 / (1 + np.exp(-Z))
 
-
-def labels_to_vectors(Y_labels):
+def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
     Each label will be represented by 10 character vector of 0's and 1
-    for example:
-        0: 1000000000
-        1: 0100000000
-        2: 0010000000
-        ...etc
-    notice that each number is presented in one column in array
-    (not row, as could be understood from example above)
+    This is known as One Hot encoding
+    In matrix this looks as follows:
+        0 1 2 3 4 5 6 7 8 9
+        ===================
+        1 0 0 0 0 0 0 0 0 0
+        0 1 0 0 0 0 0 0 0 0
+        0 0 1 0 0 0 0 0 0 0
+        0 0 0 1 0 0 0 0 0 0
+        0 0 0 0 1 0 0 0 0 0
+        0 0 0 0 0 1 0 0 0 0
+        0 0 0 0 0 0 1 0 0 0
+        0 0 0 0 0 0 0 1 0 0
+        0 0 0 0 0 0 0 0 1 0
+        0 0 0 0 0 0 0 0 0 1
 
     Args:
-    Y_labels -- vector of labels
+    Y_labels -- array of labels
 
     Returns:
-    Y_vectors -- Array of all labels represented in above-mentioned format
+    Y_vectors -- Array of all labels represented in One Hot format
     '''
 
     m = Y_labels.size
@@ -46,8 +52,8 @@ def labels_to_vectors(Y_labels):
     return Y_vectors
 
 
-def vectors_to_labels(Y_vectors):
-    '''Codes set of arrays, representing numbers, to labels
+def convert_from_one_hot(Y_vectors):
+    '''Converts One Hot array back to labels
     '''
 
     n = Y_vectors.shape[0]
@@ -194,7 +200,7 @@ def update_params(weight_params, gradient_params):
     weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 1.2
+    learning_rate = 0.05
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -229,16 +235,17 @@ def check_accuracy(X, Y, weight_params):
 
     cache_params = forward_propagation(X, weight_params)
     A2 = cache_params['A2']
-    A2_labels = vectors_to_labels(A2)
+    A2_labels = convert_from_one_hot(A2)
 
     predict_vector = np.argmax(A2, axis = 0)
     predict_vector.shape = (1, m)
-    '''
+
+    print('check_accuracy::')
     print('A2:')
     print(A2.shape)
     for i in range(10):
-        print(A2[i, 5000])
+        print(A2[i, 0])
+        print(A2[i, 1])
     print('predict_vector:')
     print(predict_vector.shape)
     print(predict_vector)
-    '''
