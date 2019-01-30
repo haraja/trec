@@ -18,6 +18,19 @@ def sigmoid(Z):
 
     return 1 / (1 + np.exp(-Z))
 
+
+def sigmoid_derivative(Z):
+    return Z * (1 - Z)
+
+
+def tanh(Z):
+    return np.tanh(Z)
+
+
+def tanh_derivative(Z):
+    return 1 - np.power(Z, 2)
+
+
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
     Each label will be represented by 10 character vector of 0's and 1
@@ -112,7 +125,7 @@ def forward_propagation(X, weight_params):
     weight_params -- dictionary containing weight parameters
 
     Returns:
-    y_hat...
+    dictionary caching the result
     '''
 
     W1 = weight_params['W1']
@@ -177,8 +190,8 @@ def backward_propagation(X, Y, weight_params, cache_params):
     dZ2 = A2 - Y
     dW2 = 1/m * np.dot(dZ2, A1.T)
     db2 = 1/m * np.sum(dZ2, axis = 1, keepdims = True)
-    dZ1 = np.dot(W2.T, dZ2) * (A1 * (1 - A1))           # derivative of sigmoid activation function
-    #dZ1 = np.dot(W2.T, dZ2) * (1 - np.power(A1, 2))    # derivative of tanh activation function
+    dZ1 = np.dot(W2.T, dZ2) * sigmoid_derivative(A1)
+    #dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)
     dW1 = 1/m * np.dot(dZ1, X.T)
     db1 = 1/m * np.sum(dZ1, axis = 1, keepdims = True)
     # NOTE: right now using sigmoid activation function is all layers.

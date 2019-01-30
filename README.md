@@ -15,8 +15,11 @@ http://yann.lecun.com/exdb/mnist/
 Notice, that files need to be extracted and placed in same folder with py-files
 
 ## Status
-This project is not finished, and not functional yet
-Only one hidden layer is initially supported
+This project is not finished, and not functional yet. Some implementation details>
+-Only one hidden layer is initially supported
+-Cost is minimized with gradient descent algorithm
+-Sigmoid activation function is currently used in all layers & nodes.
+ there is implementation for tanh as well
 
 ## Ideas during development
 Initially task is to implement machine learning algorithm, using
