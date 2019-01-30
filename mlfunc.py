@@ -31,6 +31,16 @@ def tanh_derivative(Z):
     return 1 - np.power(Z, 2)
 
 
+def relu(Z):
+    return np.maximum(0, Z)
+
+
+def relu_derivative(Z):
+    Z[Z >= 0] = 1
+    Z[Z < 0] = 0
+    return Z
+
+
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
     Each label will be represented by 10 character vector of 0's and 1
