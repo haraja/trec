@@ -2,20 +2,10 @@
 Machine learning functions
 '''
 
-
 import numpy as np
 
 
 def sigmoid(Z):
-    '''Sigmoid activation function. Works with numbers and matrices
-
-    Args:
-    Z -- real value / matrix
-
-    Returns:
-    float number / matrix, activation with sigmoid function
-    '''
-
     return 1 / (1 + np.exp(-Z))
 
 
@@ -44,7 +34,7 @@ def relu_derivative(Z):
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
     Each label will be represented by 10 character vector of 0's and 1
-    This is known as One Hot encoding
+    This is known as 'one-hot' encoding
     In matrix this looks as follows:
         0 1 2 3 4 5 6 7 8 9
         ===================
@@ -63,39 +53,38 @@ def convert_to_one_hot(Y_labels):
     Y_labels -- array of labels
 
     Returns:
-    Y_vectors -- Array of all labels represented in One Hot format
+    Y_one_hot -- Array of all labels represented in one-hot format
     '''
 
     m = Y_labels.size
-    Y_vectors = np.zeros((10, m))
+    Y_one_hot = np.zeros((10, m))
 
     for i in range(m):
-        Y_vectors[Y_labels[0, i], i] = 1
+        Y_one_hot[Y_labels[0, i], i] = 1
 
-    return Y_vectors
+    return Y_one_hot
 
 
-def convert_from_one_hot(Y_vectors):
+def convert_from_one_hot(Y_one_hot):
     '''Converts One Hot array back to labels
     '''
 
-    n = Y_vectors.shape[0]
-    m = Y_vectors.shape[1]
+    n = Y_one_hot.shape[0]
+    m = Y_one_hot.shape[1]
 
     Y_labels = np.zeros((1, m))
 
     for i in range(m):
         for j in range(n):
-            if Y_vectors[j, i] == 1:
+            if Y_one_hot[j, i] == 1:
                 Y_labels[0, i] = j
                 break
 
     return Y_labels
 
 
-
 def init_params():
-    '''Initializes the parametersof neural net
+    '''Initializes the parameter sof neural net
 
     Initially implemented for neural network with 1 hidden layer only
     (and one input and one output layer)
@@ -115,12 +104,12 @@ def init_params():
 
     #NOTE: it's not nocessary to initialize b values randomly. 0 is ok
     np.random.seed()
+    # initial weight parameters need to be random, in order for network to work
     W1 = np.random.rand(n_h, n_x)   # weight multipliers for hidden layer
     W2 = np.random.rand(n_y, n_h)   # weight multipliers for output layer
+    # b can be 0 in beginning, there is no reason to randomize that
     b1 = np.zeros((n_h, 1))         # bias multiplier for hidden layer
     b2 = np.zeros((n_y, 1))         # bias multiplier for output layer
-    #b1 = np.random.rand(n_h, 1)
-    #b2 = np.random.rand(n_y, 1)
 
     weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
 
@@ -148,6 +137,10 @@ def forward_propagation(X, weight_params):
     Z2 = np.dot(W2, A1) + b2
     A2 = sigmoid(Z2)
 
+    m = X[1].size # number of samples
+    assert A1.shape == (len(W1), m)
+    assert A2.shape == (len(W2), m)
+
     cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
 
     return cache_params
@@ -166,7 +159,7 @@ def compute_cost(Y, A):
 
     m = Y.shape[1]  # Number or y-units (0..9)
 
-    log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1-A), (1-Y))
+    log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
     # print('compute_cost::cost ' + str(cost))
 
@@ -251,13 +244,19 @@ def update_params(weight_params, gradient_params):
 def check_accuracy(X, Y, weight_params):
     '''Checks the accuracy of trained network
     '''
-
-    m = X.shape[1]
+    #TODO: nect line does not work at least with single number (784 x 1 matrix)
+    #m = X.shape[1]
+    m = 1
 
     Y_predictions = np.zeros((1, m))
 
+
+    print('check_accuracy::')
     cache_params = forward_propagation(X, weight_params)
     A2 = cache_params['A2']
+    print(A2)
+
+    '''
     A2_labels = convert_from_one_hot(A2)
 
     predict_vector = np.argmax(A2, axis = 0)
@@ -272,3 +271,4 @@ def check_accuracy(X, Y, weight_params):
     print('predict_vector:')
     print(predict_vector.shape)
     print(predict_vector)
+'''
