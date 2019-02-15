@@ -2,6 +2,8 @@ import numpy as np
 from helpers import read_data, show_number
 import mlfunc
 
+import matplotlib.pyplot as plt
+
 
 '''
 NEXT:
@@ -33,25 +35,47 @@ X_test = X_test.T
 Y.shape = (1, Y.size)
 Y_test.shape = (1, Y_test.size)
 
+'''
+temporarily change this for binary classification: Only search for number 5
+'''
+Y[Y != 5] = 0
+Y[Y == 5] = 1
+
 #show_number(X, Y, np.random.randint(0, Y.size))
 
 # shape the output from labels to arrays
-Y = mlfunc.convert_to_one_hot(Y)
-Y_test = mlfunc.convert_to_one_hot(Y_test)
+#Y = mlfunc.convert_to_one_hot(Y)
+#Y_test = mlfunc.convert_to_one_hot(Y_test)
 
-weight_params = mlfunc.init_params()
+weight_params = mlfunc.init_params(X, Y)
+print("weight params /1: ")
+print(weight_params)
 
-
-for i in range(2):
-    cache_params = mlfunc.forward_propagation(X, weight_params)
-    cost = mlfunc.compute_cost(Y, cache_params['A2'])
-    print('\nCost: ' + str(cost))
-    gradient_params = mlfunc.backward_propagation(X, Y, weight_params, cache_params)
-    weight_params = mlfunc.update_params(weight_params, gradient_params)
-
-#    if i % 10 == 0:
-#        print('Cost: ' + str(cost))
-
-#first_number = X[:,1]
-#mlfunc.check_accuracy(first_number, Y, weight_params)
+weight_params = mlfunc.run_model(X, Y, weight_params)
+print("weight params: /2 ")
+print(weight_params)
 #mlfunc.check_accuracy(X, Y, weight_params)
+predictions = mlfunc.predict(X, weight_params)
+print("predictions mean = " + str(np.mean(predictions)))
+
+
+
+'''
+print("W1")
+print(weight_params['W1'])
+print("b1")
+print(weight_params['b1'])
+print("W2")
+print(weight_params['W2'])
+print("b2")
+print(weight_params['b2'])
+'''
+
+'''
+first_number = X[:,[0]]
+mlfunc.check_accuracy(first_number, Y, weight_params)
+first_number.shape = (28, 28)
+#print(label_array[0, index])
+plt.imshow(first_number, cmap='gray')
+plt.show()
+'''

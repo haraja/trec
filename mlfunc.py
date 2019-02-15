@@ -56,6 +56,7 @@ def convert_to_one_hot(Y_labels):
     Y_one_hot -- Array of all labels represented in one-hot format
     '''
 
+    assert Y_labels.shape[0] == 1
     m = Y_labels.size
     Y_one_hot = np.zeros((10, m))
 
@@ -71,6 +72,7 @@ def convert_from_one_hot(Y_one_hot):
 
     n = Y_one_hot.shape[0]
     m = Y_one_hot.shape[1]
+    assert n == 10
 
     Y_labels = np.zeros((1, m))
 
@@ -83,7 +85,7 @@ def convert_from_one_hot(Y_one_hot):
     return Y_labels
 
 
-def init_params():
+def init_params(X, Y):
     '''Initializes the parameter sof neural net
 
     Initially implemented for neural network with 1 hidden layer only
@@ -98,18 +100,21 @@ def init_params():
     '''
 
     # TODO: Get hardcoded values from below rather from image dimension etc.
-    n_x = 784   # size of input layer - size of 1 image
-    n_h = 15    # size of hidden layer
-    n_y = 10    # size of output layer, number of labels (possible characters)
+    n_x = X.shape[0]    # size of input layer - size of 1 image
+    n_h = 15            # size of hidden layer
+    n_y = Y.shape[0]    # size of output layer
+    # TODO: take following lines eventually out
+    assert n_x == 784
+    assert n_y == 1
 
-    #NOTE: it's not nocessary to initialize b values randomly. 0 is ok
-    np.random.seed()
     # initial weight parameters need to be random, in order for network to work
-    W1 = np.random.rand(n_h, n_x)   # weight multipliers for hidden layer
-    W2 = np.random.rand(n_y, n_h)   # weight multipliers for output layer
+    # TODO check which multipliers to add for Wx randoms
+    np.random.seed()
+    W1 = np.random.rand(n_h, n_x) * 0.01    # weight multipliers for hidden layer
+    W2 = np.random.rand(n_y, n_h) * 0.01    # weight multipliers for output layer
     # b can be 0 in beginning, there is no reason to randomize that
-    b1 = np.zeros((n_h, 1))         # bias multiplier for hidden layer
-    b2 = np.zeros((n_y, 1))         # bias multiplier for output layer
+    b1 = np.zeros((n_h, 1))                 # bias multiplier for hidden layer
+    b2 = np.zeros((n_y, 1))                 # bias multiplier for output layer
 
     weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
 
@@ -133,11 +138,13 @@ def forward_propagation(X, weight_params):
     b2 = weight_params['b2']
 
     Z1 = np.dot(W1, X) + b1
-    A1 = sigmoid(Z1)
+    A1 = tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
     A2 = sigmoid(Z2)
 
     m = X[1].size # number of samples
+    assert Z1.shape == (len(W1), m)
+    assert Z2.shape == (len(W2), m)
     assert A1.shape == (len(W1), m)
     assert A2.shape == (len(W2), m)
 
@@ -157,11 +164,12 @@ def compute_cost(Y, A):
     cost
     '''
 
-    m = Y.shape[1]  # Number or y-units (0..9)
-
+    m = Y.shape[1]
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
-    # print('compute_cost::cost ' + str(cost))
+
+    cost = np.squeeze(cost)
+    assert(isinstance(cost, float))
 
     return cost
 
@@ -172,14 +180,14 @@ def backward_propagation(X, Y, weight_params, cache_params):
     Args:
     X -- input parameters (images)
     Y -- true labels
-    weight_params --
+    weight_params -- weight parameters
     cache_params -- Z, A, parameters computed during forward propagation
 
     Returns:
-    gradient_params --  parameters of the gradient (weight - derivative)
+    gradient_params --  parameters of the gradients (weight - derivative)
     '''
 
-    m = Y.shape[1]  # Number or y-units (0..9)
+    m = X.shape[1]
 
     # Get weights parameters from forward propagations
     W1 = weight_params['W1']
@@ -193,7 +201,7 @@ def backward_propagation(X, Y, weight_params, cache_params):
     dZ2 = A2 - Y
     dW2 = 1/m * np.dot(dZ2, A1.T)
     db2 = 1/m * np.sum(dZ2, axis = 1, keepdims = True)
-    dZ1 = np.dot(W2.T, dZ2) * sigmoid_derivative(A1)
+    dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)
     #dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)
     dW1 = 1/m * np.dot(dZ1, X.T)
     db1 = 1/m * np.sum(dZ1, axis = 1, keepdims = True)
@@ -216,7 +224,7 @@ def update_params(weight_params, gradient_params):
     weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 0.05
+    learning_rate = 0.1
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -240,21 +248,43 @@ def update_params(weight_params, gradient_params):
 
     return weight_params
 
+def run_model(X, Y, weight_params):
+    # weight_params = init_params(X, Y)
+
+    for i in range(2000):
+        cache_params = forward_propagation(X, weight_params)
+        cost = compute_cost(Y, cache_params['A2'])
+        gradient_params = backward_propagation(X, Y, weight_params, cache_params)
+        weight_params = update_params(weight_params, gradient_params)
+
+        if i % 100 == 0:
+            print('Cost: ' + str(cost))
+    
+    return weight_params
+
+
+def predict(X, weight_params):
+    cache = forward_propagation(X, weight_params)
+    A2 = cache['A2']
+    print(A2)
+    #predictions = (A > 0.5)
+    predictions = np.round(A2)
+    print(predictions)
+    
+    return predictions
+
 
 def check_accuracy(X, Y, weight_params):
     '''Checks the accuracy of trained network
     '''
-    #TODO: nect line does not work at least with single number (784 x 1 matrix)
-    #m = X.shape[1]
-    m = 1
 
-    Y_predictions = np.zeros((1, m))
-
+    print(Y)
 
     print('check_accuracy::')
     cache_params = forward_propagation(X, weight_params)
     A2 = cache_params['A2']
     print(A2)
+    print(Y)
 
     '''
     A2_labels = convert_from_one_hot(A2)
