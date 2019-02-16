@@ -224,7 +224,7 @@ def update_params(weight_params, gradient_params):
     weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 0.1
+    learning_rate = 1.5
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -251,6 +251,7 @@ def update_params(weight_params, gradient_params):
 def run_model(X, Y, weight_params):
     # weight_params = init_params(X, Y)
 
+    print("Cost:")
     for i in range(2000):
         cache_params = forward_propagation(X, weight_params)
         cost = compute_cost(Y, cache_params['A2'])
@@ -258,7 +259,7 @@ def run_model(X, Y, weight_params):
         weight_params = update_params(weight_params, gradient_params)
 
         if i % 100 == 0:
-            print('Cost: ' + str(cost))
+            print(cost)
     
     return weight_params
 
@@ -269,24 +270,37 @@ def predict(X, weight_params):
     print(A2)
     #predictions = (A > 0.5)
     predictions = np.round(A2)
+    print("predictions: ")
     print(predictions)
+    #print("predictions mean: " + str(np.mean(predictions)))
     
     return predictions
 
 
-def check_accuracy(X, Y, weight_params):
+def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
 
-    print(Y)
-
     print('check_accuracy::')
+
+    correct_ones = 0
+    total_ones = 0
+    for i in range(Y.shape[1]):
+        if Y[0, i] == 1:
+            total_ones += 1
+            if predictions[0, i] == 1:
+                correct_ones += 1
+
+    print("total_ones: " + str(total_ones))
+    print("correct_ones: " + str(correct_ones))
+
+'''
     cache_params = forward_propagation(X, weight_params)
     A2 = cache_params['A2']
     print(A2)
     print(Y)
-
-    '''
+'''
+'''
     A2_labels = convert_from_one_hot(A2)
 
     predict_vector = np.argmax(A2, axis = 0)

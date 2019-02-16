@@ -5,3 +5,5 @@ data/
 # Other files
 __pycache__/
 test_trec.py
+*.xlsx
+*.pkl

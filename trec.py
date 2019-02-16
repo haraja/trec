@@ -1,7 +1,9 @@
 import numpy as np
 from helpers import read_data, show_number
 import mlfunc
-
+import time
+import pickle
+import json
 import matplotlib.pyplot as plt
 
 
@@ -40,6 +42,9 @@ temporarily change this for binary classification: Only search for number 5
 '''
 Y[Y != 5] = 0
 Y[Y == 5] = 1
+Y_test[Y_test != 5] = 0
+Y_test[Y_test == 5] = 1
+
 
 #show_number(X, Y, np.random.randint(0, Y.size))
 
@@ -48,34 +53,34 @@ Y[Y == 5] = 1
 #Y_test = mlfunc.convert_to_one_hot(Y_test)
 
 weight_params = mlfunc.init_params(X, Y)
-print("weight params /1: ")
-print(weight_params)
+#print("weight params /1: ")
+#print(weight_params)
 
+# Either:
+# 1. train model to get new weight parameters
+start_time = time.time()
 weight_params = mlfunc.run_model(X, Y, weight_params)
-print("weight params: /2 ")
-print(weight_params)
+end_time = time.time()
+
+# Or:
+# 2. load weight parameters from earlier learned set
+'''
+with open('weight_params.pkl', 'rb') as f:
+    weight_params = pickle.load(f)
+'''
+
+#print("weight params: /2 ")
+#print(weight_params)
 #mlfunc.check_accuracy(X, Y, weight_params)
 predictions = mlfunc.predict(X, weight_params)
-print("predictions mean = " + str(np.mean(predictions)))
+mlfunc.check_accuracy(Y, predictions)
+print("time elapsed: " + str(end_time - start_time))
+#print("predictions mean = " + str(np.mean(predictions)))
 
+print("TEST SET")
+predictions = mlfunc.predict(X_test, weight_params)
+mlfunc.check_accuracy(Y_test, predictions)
 
-
-'''
-print("W1")
-print(weight_params['W1'])
-print("b1")
-print(weight_params['b1'])
-print("W2")
-print(weight_params['W2'])
-print("b2")
-print(weight_params['b2'])
-'''
-
-'''
-first_number = X[:,[0]]
-mlfunc.check_accuracy(first_number, Y, weight_params)
-first_number.shape = (28, 28)
-#print(label_array[0, index])
-plt.imshow(first_number, cmap='gray')
-plt.show()
-'''
+# write learned weight parameters into disk
+with open('weight_params.pkl', 'wb') as f:
+    pickle.dump(weight_params, f)
