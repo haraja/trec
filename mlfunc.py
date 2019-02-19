@@ -31,6 +31,33 @@ def relu_derivative(Z):
     return Z
 
 
+def softmax(Z):
+    '''Calculates softmax values for multiclass classification - output layer on neural network
+
+    Args: Vector of Z-values of output layer
+
+    Returns: Vector of A-values, calculated with softmax activation function 
+    '''
+
+    #n = Z.size
+    #assert n == 10
+    #A = np.zeros((n, 1))
+
+    #divisor = 0
+    divisor = np.sum(np.exp(Z))
+    assert isinstance(divisor, float)
+    #for i in range(n):
+    #    divisor += np.exp(Z[i, 0])
+
+    A = np.exp(Z) / divisor
+    #for i in range(n):
+    #    A[i, 0] = np.exp(Z[i, 0] / divisor
+        #assert isinstance(A[i, 0], float)
+
+    assert A.shape == (10, 1)
+    return A
+ 
+
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
     Each label will be represented by 10 character vector of 0's and 1
@@ -174,6 +201,12 @@ def compute_cost(Y, A):
     return cost
 
 
+def compute_cost_softmax(Y, A):
+    m = Y.shape
+    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
+    cost = 1/m * np.sum(log_calc)
+
+
 def backward_propagation(X, Y, weight_params, cache_params):
     '''Backward propagation computes delta between true values and computed weighted values
 
@@ -248,11 +281,11 @@ def update_params(weight_params, gradient_params):
 
     return weight_params
 
-def run_model(X, Y, weight_params):
+def run_model(X, Y, weight_params, iterations = 2000):
     # weight_params = init_params(X, Y)
 
     print("Cost:")
-    for i in range(2000):
+    for i in range(iterations):
         cache_params = forward_propagation(X, weight_params)
         cost = compute_cost(Y, cache_params['A2'])
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
@@ -268,7 +301,8 @@ def predict(X, weight_params):
     cache = forward_propagation(X, weight_params)
     A2 = cache['A2']
     print(A2)
-    #predictions = (A > 0.5)
+
+    # if value > 0.5, this is considered to be the number
     predictions = np.round(A2)
     print("predictions: ")
     print(predictions)
@@ -293,26 +327,3 @@ def check_accuracy(Y, predictions):
 
     print("total_ones: " + str(total_ones))
     print("correct_ones: " + str(correct_ones))
-
-'''
-    cache_params = forward_propagation(X, weight_params)
-    A2 = cache_params['A2']
-    print(A2)
-    print(Y)
-'''
-'''
-    A2_labels = convert_from_one_hot(A2)
-
-    predict_vector = np.argmax(A2, axis = 0)
-    predict_vector.shape = (1, m)
-
-    print('check_accuracy::')
-    print('A2:')
-    print(A2.shape)
-    for i in range(10):
-        print(A2[i, 0])
-        print(A2[i, 1])
-    print('predict_vector:')
-    print(predict_vector.shape)
-    print(predict_vector)
-'''
