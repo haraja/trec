@@ -4,6 +4,8 @@ Misc helper functions
 
 import numpy as np
 import matplotlib.pyplot as plt
+import mlfunc
+from enums import Classification
 
 # TODO: Make this dynamic; get offset from the file itself
 def read_data(filename, dataoffset):
@@ -12,12 +14,12 @@ def read_data(filename, dataoffset):
      -images is 28x28px size, each pixel valued 0-255
      -label is a single number, valued 0-9
 
-     Args:
-     filename -- name of the binary datafile
-     dataoffset -- offset, after which the data payload in file starts
+    Args:
+        filename -- name of the binary datafile
+        dataoffset -- offset, after which the data payload in file starts
 
-     Returns:
-     numpy-array of payload
+    Returns:
+        numpy-array of payload
      '''
 
     f = open(filename, 'rb')
@@ -29,9 +31,9 @@ def show_number(number_array, label_array, index):
     """ Visualizes the number and prints its label
 
     Args:
-    number_array -- array of numbers
-    label_array -- array of labels for numbers
-    index -- index of number in array
+        number_array -- array of numbers
+        label_array -- array of labels for numbers
+        index -- index of number in array
     """
 
     num = number_array[:,[index]]
@@ -42,14 +44,14 @@ def show_number(number_array, label_array, index):
     plt.show()
 
 
-def get_data():
+def get_data(classification_type):
     ''' reads data from files and returns in suitable format
 
     Return:
-    X       -- learning set of data
-    X_test  -- test set of data
-    Y       -- labels of learning set
-    Y_test  -- labels if test set
+    X       -- learning set data
+    X_test  -- test set data
+    Y       -- learning set labels
+    Y_test  -- test set labels
 
     '''
     
@@ -73,18 +75,19 @@ def get_data():
     Y.shape = (1, Y.size)
     Y_test.shape = (1, Y_test.size)
 
-    '''
-    temporarily change this for binary classification: Only search for number 5
-    '''
-    Y[Y != 5] = 0
-    Y[Y == 5] = 1
-    Y_test[Y_test != 5] = 0
-    Y_test[Y_test == 5] = 1
+    if classification_type == Classification.BINARY:
+        Y[Y != 5] = 0
+        Y[Y == 5] = 1
+        Y_test[Y_test != 5] = 0
+        Y_test[Y_test == 5] = 1
+    else:
+        # shape the output from labels to arrays, for multiclass classification
+        Y = mlfunc.convert_to_one_hot(Y)
+        Y_test = mlfunc.convert_to_one_hot(Y_test)
+
+
 
     #show_number(X, Y, np.random.randint(0, Y.size))
 
-    # shape the output from labels to arrays
-    #Y = mlfunc.convert_to_one_hot(Y)
-    #Y_test = mlfunc.convert_to_one_hot(Y_test)
 
     return X, X_test, Y, Y_test

@@ -3,29 +3,42 @@ Machine learning functions
 '''
 
 import numpy as np
+from enums import Classification
 
 
 def sigmoid(Z):
+    ''' Sigmoid activation function
+    '''
     return 1 / (1 + np.exp(-Z))
 
 
 def sigmoid_derivative(Z):
+    ''' Derivative of Sigmoid activation function
+    '''
     return Z * (1 - Z)
 
 
 def tanh(Z):
+    ''' Tanh activation function
+    '''
     return np.tanh(Z)
 
 
 def tanh_derivative(Z):
+    ''' Derivative of Tanh activation function
+    '''
     return 1 - np.power(Z, 2)
 
 
 def relu(Z):
+    ''' ReLU activation function
+    '''
     return np.maximum(0, Z)
 
 
 def relu_derivative(Z):
+    ''' Dericative of ReLU activation function
+    '''
     Z[Z >= 0] = 1
     Z[Z < 0] = 0
     return Z
@@ -281,12 +294,22 @@ def update_params(weight_params, gradient_params):
 
     return weight_params
 
-def run_model(X, Y, weight_params, iterations = 2000):
+def run_model(X, Y, weight_params, iterations, classification_type):
     # weight_params = init_params(X, Y)
 
     print("Cost:")
+    cost = 0
+    
     for i in range(iterations):
         cache_params = forward_propagation(X, weight_params)
+
+        if classification_type == Classification.BINARY:
+            cost = compute_cost(Y, cache_params['A2'])
+        #else:
+        #    cost = compute_cost_softmax(Y, cache_params['A2'])
+        if i == 0:
+            cost_start = cost
+
         cost = compute_cost(Y, cache_params['A2'])
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
