@@ -228,12 +228,6 @@ def compute_cost_softmax(Y, A):
     return cost
 
 
-def compute_cost_softmax(Y, A):
-    m = Y.shape
-    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
-    cost = 1/m * np.sum(log_calc)
-
-
 def backward_propagation(X, Y, weight_params, cache_params):
     '''Backward propagation computes delta between true values and computed weighted values
 
