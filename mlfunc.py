@@ -203,12 +203,22 @@ def compute_cost(Y, A):
     Returns:
     cost
     '''
-
     m = Y.shape[1]
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
 
     cost = np.squeeze(cost)
+    assert(isinstance(cost, float))
+
+    return cost
+
+
+def compute_cost_softmax(Y, A):
+    ''' Computes cost with softmax - used with multiclass classification on last layer
+    '''
+    m = Y.shape[1]
+    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
+    cost = 1/m * np.sum(log_calc)
     assert(isinstance(cost, float))
 
     return cost
@@ -299,7 +309,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
 
     print("Cost:")
     cost = 0
-    
+
     for i in range(iterations):
         cache_params = forward_propagation(X, weight_params)
 
@@ -323,12 +333,13 @@ def run_model(X, Y, weight_params, iterations, classification_type):
 def predict(X, weight_params):
     cache = forward_propagation(X, weight_params)
     A2 = cache['A2']
-    print(A2)
+    #print("A2: ")
+    #print(A2)
 
     # if value > 0.5, this is considered to be the number
     predictions = np.round(A2)
-    print("predictions: ")
-    print(predictions)
+    #print("predictions: ")
+    #print(predictions)
     #print("predictions mean: " + str(np.mean(predictions)))
     
     return predictions
