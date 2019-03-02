@@ -51,25 +51,33 @@ def softmax(Z):
 
     Returns: Vector of A-values, calculated with softmax activation function 
     '''
+    assert Z.shape[0] == 10
 
-    #n = Z.size
-    #assert n == 10
-    #A = np.zeros((n, 1))
+    m = Z.shape[1]
+    divisor = np.zeros((1, m))
+    divisor = np.sum(np.exp(Z), axis=0)
+    divisor.shape = (1, m)
 
-    #divisor = 0
-    divisor = np.sum(np.exp(Z))
-    assert isinstance(divisor, float)
+    tZ = np.exp(Z)
+    A = np.divide(tZ, divisor)
+
+    return A
+
+'''
+    print("SOFTMAX::")
+    print("shape of Z and divisor: ")
+    print(Z.shape)
+    print(divisor.shape)
+'''
+    #assert isinstance(divisor, float)
     #for i in range(n):
     #    divisor += np.exp(Z[i, 0])
 
-    A = np.exp(Z) / divisor
+    #A = np.exp(Z) / divisor
     #for i in range(n):
     #    A[i, 0] = np.exp(Z[i, 0] / divisor
         #assert isinstance(A[i, 0], float)
 
-    # TODO: check: assert A.shape == (10, 1)
-    return A
- 
 
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
@@ -278,7 +286,7 @@ def update_params(weight_params, gradient_params):
     weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 1.5
+    learning_rate = 1.0
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -326,7 +334,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
     return weight_params
 
 
-def predict(X, weight_params):
+def predict(X, weight_params, classification_type):
     cache = forward_propagation(X, weight_params, classification_type)
     A2 = cache['A2']
     #print("A2: ")
@@ -357,3 +365,4 @@ def check_accuracy(Y, predictions):
 
     print("total_ones: " + str(total_ones))
     print("correct_ones: " + str(correct_ones))
+    print("%: " + str(correct_ones / total_ones *100))
