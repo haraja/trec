@@ -161,7 +161,7 @@ def init_params(X, Y):
     return weight_params
 
 
-def forward_propagation(X, weight_params):
+def forward_propagation(X, weight_params, classification_type):
     '''Forward propagation of the parameters
 
     Parameters:
@@ -180,7 +180,11 @@ def forward_propagation(X, weight_params):
     Z1 = np.dot(W1, X) + b1
     A1 = tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
-    A2 = sigmoid(Z2)
+
+    if classification_type == Classification.BINARY:
+        A2 = sigmoid(Z2)
+    else:
+        A2 = softmax(Z2)    # for multiclass classification
 
     m = X[1].size # number of samples
     assert Z1.shape == (len(W1), m)
@@ -311,14 +315,12 @@ def run_model(X, Y, weight_params, iterations, classification_type):
     cost = 0
 
     for i in range(iterations):
-        cache_params = forward_propagation(X, weight_params)
+        cache_params = forward_propagation(X, weight_params, classification_type)
 
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
-        #else:
-        #    cost = compute_cost_softmax(Y, cache_params['A2'])
-        if i == 0:
-            cost_start = cost
+        else:
+            cost = compute_cost_softmax(Y, cache_params['A2'])
 
         cost = compute_cost(Y, cache_params['A2'])
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
@@ -331,7 +333,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
 
 
 def predict(X, weight_params):
-    cache = forward_propagation(X, weight_params)
+    cache = forward_propagation(X, weight_params, classification_type)
     A2 = cache['A2']
     #print("A2: ")
     #print(A2)
