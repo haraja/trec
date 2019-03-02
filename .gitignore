@@ -4,6 +4,7 @@ data/
 
 # Other files
 __pycache__/
+.vscode/
 test.py
 *.xlsx
 *.pkl
