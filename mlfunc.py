@@ -67,7 +67,7 @@ def softmax(Z):
     #    A[i, 0] = np.exp(Z[i, 0] / divisor
         #assert isinstance(A[i, 0], float)
 
-    assert A.shape == (10, 1)
+    # TODO: check: assert A.shape == (10, 1)
     return A
  
 
@@ -145,7 +145,7 @@ def init_params(X, Y):
     n_y = Y.shape[0]    # size of output layer
     # TODO: take following lines eventually out
     assert n_x == 784
-    assert n_y == 1
+    assert (n_y == 1) or (n_y == 10)
 
     # initial weight parameters need to be random, in order for network to work
     # TODO check which multipliers to add for Wx randoms
