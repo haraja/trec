@@ -1,4 +1,4 @@
-# TReg
+# TRec
 Program to recognize handwritten characters
 
 ## Why trec?

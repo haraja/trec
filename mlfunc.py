@@ -3,29 +3,42 @@ Machine learning functions
 '''
 
 import numpy as np
+from enums import Classification
 
 
 def sigmoid(Z):
+    ''' Sigmoid activation function
+    '''
     return 1 / (1 + np.exp(-Z))
 
 
 def sigmoid_derivative(Z):
+    ''' Derivative of Sigmoid activation function
+    '''
     return Z * (1 - Z)
 
 
 def tanh(Z):
+    ''' Tanh activation function
+    '''
     return np.tanh(Z)
 
 
 def tanh_derivative(Z):
+    ''' Derivative of Tanh activation function
+    '''
     return 1 - np.power(Z, 2)
 
 
 def relu(Z):
+    ''' ReLU activation function
+    '''
     return np.maximum(0, Z)
 
 
 def relu_derivative(Z):
+    ''' Dericative of ReLU activation function
+    '''
     Z[Z >= 0] = 1
     Z[Z < 0] = 0
     return Z
@@ -33,10 +46,11 @@ def relu_derivative(Z):
 
 def softmax(Z):
     '''Calculates softmax values for multiclass classification - output layer on neural network
+    Z -> softmax-actication -> A
 
     Args: Vector of Z-values of output layer
 
-    Returns: Vector of A-values, calculated with softmax activation function 
+    Returns: Vector of A-values, calculated with softmax activation function
     '''
 
     #n = Z.size
@@ -54,13 +68,13 @@ def softmax(Z):
     #    A[i, 0] = np.exp(Z[i, 0] / divisor
         #assert isinstance(A[i, 0], float)
 
-    assert A.shape == (10, 1)
+    assert A.shape[0] == 10
     return A
  
 
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
-    Each label will be represented by 10 character vector of 0's and 1
+    As this program works with numbers 0..9, each label will be represented by 10 character vector of 0 and 1
     This is known as 'one-hot' encoding
     In matrix this looks as follows:
         0 1 2 3 4 5 6 7 8 9
@@ -77,10 +91,10 @@ def convert_to_one_hot(Y_labels):
         0 0 0 0 0 0 0 0 0 1
 
     Args:
-    Y_labels -- array of labels
+    Y_labels -- array of labels - each label in single number
 
     Returns:
-    Y_one_hot -- Array of all labels represented in one-hot format
+    Y_one_hot -- array of labels - each label represented in one-hot format
     '''
 
     assert Y_labels.shape[0] == 1
@@ -130,9 +144,9 @@ def init_params(X, Y):
     n_x = X.shape[0]    # size of input layer - size of 1 image
     n_h = 15            # size of hidden layer
     n_y = Y.shape[0]    # size of output layer
-    # TODO: take following lines eventually out
+    
     assert n_x == 784
-    assert n_y == 1
+    assert n_y == 10
 
     # initial weight parameters need to be random, in order for network to work
     # TODO check which multipliers to add for Wx randoms
@@ -167,15 +181,17 @@ def forward_propagation(X, weight_params):
     Z1 = np.dot(W1, X) + b1
     A1 = tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
-    A2 = sigmoid(Z2)
+    #A2 = sigmoid(Z2)
+    A2 = softmax(Z2)
+    
+    # TODO: check whether cache should have b params as well
+    cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
 
     m = X[1].size # number of samples
     assert Z1.shape == (len(W1), m)
     assert Z2.shape == (len(W2), m)
     assert A1.shape == (len(W1), m)
     assert A2.shape == (len(W2), m)
-
-    cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
 
     return cache_params
 
@@ -184,40 +200,42 @@ def compute_cost(Y, A):
     '''Computes cost of for the forward propagation
 
     Args:
-    Y -- true labels
-    A -- output of the last layer's activation
+        Y -- true labels
+        A -- output of the last layer's activation
 
     Returns:
-    cost
+        cost
     '''
 
     m = Y.shape[1]
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
-
-    cost = np.squeeze(cost)
+    #cost = np.squeeze(cost)
     assert(isinstance(cost, float))
 
     return cost
 
 
 def compute_cost_softmax(Y, A):
-    m = Y.shape
+    m = Y.shape[1]
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
     cost = 1/m * np.sum(log_calc)
+    assert(isinstance(cost, float))
+
+    return cost
 
 
 def backward_propagation(X, Y, weight_params, cache_params):
     '''Backward propagation computes delta between true values and computed weighted values
 
     Args:
-    X -- input parameters (images)
-    Y -- true labels
-    weight_params -- weight parameters
-    cache_params -- Z, A, parameters computed during forward propagation
+        X -- input parameters (images)
+        Y -- true labels
+        weight_params -- weight parameters
+        cache_params -- Z, A, parameters computed during forward propagation
 
     Returns:
-    gradient_params --  parameters of the gradients (weight - derivative)
+        gradient_params --  parameters of the gradients (weight - derivative)
     '''
 
     m = X.shape[1]
@@ -234,12 +252,9 @@ def backward_propagation(X, Y, weight_params, cache_params):
     dZ2 = A2 - Y
     dW2 = 1/m * np.dot(dZ2, A1.T)
     db2 = 1/m * np.sum(dZ2, axis = 1, keepdims = True)
-    dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)
-    #dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)
+    dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)   # TODO: check whether this is correct - should be _activate(Z1)?
     dW1 = 1/m * np.dot(dZ1, X.T)
     db1 = 1/m * np.sum(dZ1, axis = 1, keepdims = True)
-    # NOTE: right now using sigmoid activation function is all layers.
-    # If different activation functions would be used, then dZx would also need to change
 
     gradient_params = {'dW1': dW1, 'db1': db1, 'dW2': dW2, 'db2': db2}
 
@@ -250,14 +265,14 @@ def update_params(weight_params, gradient_params):
     '''Updates weight parameters from the gradient
 
     Args:
-    X -- input array
-    weight_params -- dictionary of weight and bias parameters
+        X -- input array
+        weight_params -- dictionary of weight and bias parameters
 
     Returns:
-    weight_params -- updated weight and bias parameters
+        weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 1.5
+    learning_rate = 0.0001
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -281,31 +296,43 @@ def update_params(weight_params, gradient_params):
 
     return weight_params
 
-def run_model(X, Y, weight_params, iterations = 2000):
-    # weight_params = init_params(X, Y)
 
+def run_model(X, Y, weight_params, iterations, classification_type):
     print("Cost:")
+    cost = 0
+    cost_start = 0
+    cost_end = 0
     for i in range(iterations):
         cache_params = forward_propagation(X, weight_params)
-        cost = compute_cost(Y, cache_params['A2'])
+        if classification_type == Classification.BINARY:
+            cost = compute_cost(Y, cache_params['A2'])
+        else:
+            cost = compute_cost_softmax(Y, cache_params['A2'])
+        if i == 0:
+            cost_start = cost
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
         if i % 100 == 0:
+            #print('iteration: ' + str(i))
             print(cost)
     
+    cost_end = cost
+    print('cost_start - cost_end: ' + str(cost_start - cost_end))
     return weight_params
 
 
 def predict(X, weight_params):
     cache = forward_propagation(X, weight_params)
     A2 = cache['A2']
-    print(A2)
+
+    #print("A2")
+    #print(A2)
 
     # if value > 0.5, this is considered to be the number
     predictions = np.round(A2)
-    print("predictions: ")
-    print(predictions)
+    #print("predictions: ")
+    #print(predictions)
     #print("predictions mean: " + str(np.mean(predictions)))
     
     return predictions
