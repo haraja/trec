@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import mlfunc
 from enums import Classification
 
-
 # TODO: Make this dynamic; get offset from the file itself
 def read_data(filename, dataoffset):
     '''Read test- and training-sets (images, labels) from idx-file into numpy-array
@@ -15,11 +14,11 @@ def read_data(filename, dataoffset):
      -images is 28x28px size, each pixel valued 0-255
      -label is a single number, valued 0-9
 
-     Args:
+    Args:
         filename -- name of the binary datafile
         dataoffset -- offset, after which the data payload in file starts
 
-     Returns:
+    Returns:
         numpy-array of payload
      '''
 
@@ -45,8 +44,14 @@ def show_number(number_array, label_array, index):
     plt.show()
 
 
-def get_data(classification_data):
-    ''' Reads data from files and returns in suitable format
+def get_data(classification_type):
+    ''' reads data from files and returns in suitable format
+
+    Return:
+    X       -- learning set data
+    X_test  -- test set data
+    Y       -- learning set labels
+    Y_test  -- test set labels
 
     Returns:
         X       -- learning set data
@@ -75,17 +80,16 @@ def get_data(classification_data):
     Y.shape = (1, Y.size)
     Y_test.shape = (1, Y_test.size)
 
-    if classification_data == Classification.BINARY:
-    # change this for binary classification: Only search for number 5
+    if classification_type == Classification.BINARY:
         Y[Y != 5] = 0
         Y[Y == 5] = 1
         Y_test[Y_test != 5] = 0
         Y_test[Y_test == 5] = 1
-    
-    #show_number(X, Y, np.random.randint(0, Y.size))
+    else:
+        # shape the output from labels to arrays, for multiclass classification
+        Y = mlfunc.convert_to_one_hot(Y)
+        Y_test = mlfunc.convert_to_one_hot(Y_test)
 
-    # shape the output from labels to one-hot array
-    Y = mlfunc.convert_to_one_hot(Y)
-    Y_test = mlfunc.convert_to_one_hot(Y_test)
+    #show_number(X, Y, np.random.randint(0, Y.size))
 
     return X, X_test, Y, Y_test

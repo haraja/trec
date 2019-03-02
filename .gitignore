@@ -4,6 +4,6 @@ data/
 
 # Other files
 __pycache__/
-test_trec.py
+test.py
 *.xlsx
 *.pkl

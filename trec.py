@@ -7,15 +7,31 @@ import argparse
 import time
 import pickle
 import matplotlib.pyplot as plt
+from enums import Classification
+import sys
+import argparse
 
 '''
 TODO:
--implement softmax for model to work with multiclass-classification
--fix relU functions - does not work currently
+-fix relU functions - do not work currently
 -implement regularization for cost function
 -remove hardcodings from data read & array sizes
 '''
 
+# Read command line arguments. Possibility to select whether binary- or muticlass-clasification is used
+#   binary classification: only learns single value from training data, and predicts only that single value
+#   lears all numbers from training data and predicts any number value
+parser = argparse.ArgumentParser(description='Harris machine learning script.')
+parser.add_argument('-c', action='store', dest='classification_arg', default='binary', help='[binary | multiclass]')
+args = parser.parse_args()
+
+classification_type = Classification.BINARY
+if args.classification_arg == 'multiclass':
+    classification_type = Classification.MULTICLASS
+#print('Classification type: ', classification_type)
+
+# Get all training- and test-datasets
+X, X_test, Y, Y_test = helpers.get_data(classification_type)
 
 # Read command line arguments. Possibility to select whether binary- or muticlass-clasification is used
 #   binary classification: only learns single value from training data, and predicts only that single value
@@ -39,7 +55,7 @@ weight_params = mlfunc.init_params(X, Y)
 # Either:
 # 1. train model to get new weight parameters
 start_time = time.time()
-weight_params = mlfunc.run_model(X, Y, weight_params, 2000, classification_type)
+weight_params = mlfunc.run_model(X, Y, weight_params, 1000, classification_type)
 end_time = time.time()
 
 # Or:
@@ -51,17 +67,16 @@ with open('weight_params.pkl', 'rb') as f:
 
 #print("weight params: /2 ")
 #print(weight_params)
-#mlfunc.check_accuracy(X, Y, weight_params)
-predictions = mlfunc.predict(X, weight_params)
+
+predictions = mlfunc.predict(X, weight_params, classification_type)
 mlfunc.check_accuracy(Y, predictions)
 print("time elapsed: " + str(end_time - start_time))
 #print("predictions mean = " + str(np.mean(predictions)))
 
-'''
 print("TEST SET")
-predictions = mlfunc.predict(X_test, weight_params)
+predictions = mlfunc.predict(X_test, weight_params, classification_type)
 mlfunc.check_accuracy(Y_test, predictions)
-'''
+
 '''
 # write learned weight parameters into disk
 with open('weight_params.pkl', 'wb') as f:

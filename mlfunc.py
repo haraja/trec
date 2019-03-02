@@ -52,25 +52,18 @@ def softmax(Z):
 
     Returns: Vector of A-values, calculated with softmax activation function
     '''
+    assert Z.shape[0] == 10
 
-    #n = Z.size
-    #assert n == 10
-    #A = np.zeros((n, 1))
+    m = Z.shape[1]
+    #divisor = np.zeros((1, m))
+    divisor = np.sum(np.exp(Z), axis=0)
+    divisor.shape = (1, m)
 
-    #divisor = 0
-    divisor = np.sum(np.exp(Z))
-    assert isinstance(divisor, float)
-    #for i in range(n):
-    #    divisor += np.exp(Z[i, 0])
+    tZ = np.exp(Z)
+    A = np.divide(tZ, divisor)
 
-    A = np.exp(Z) / divisor
-    #for i in range(n):
-    #    A[i, 0] = np.exp(Z[i, 0] / divisor
-        #assert isinstance(A[i, 0], float)
-
-    assert A.shape[0] == 10
     return A
- 
+
 
 def convert_to_one_hot(Y_labels):
     '''Codes each label in array to character array to be used in neural network
@@ -96,8 +89,8 @@ def convert_to_one_hot(Y_labels):
     Returns:
     Y_one_hot -- array of labels - each label represented in one-hot format
     '''
-
     assert Y_labels.shape[0] == 1
+
     m = Y_labels.size
     Y_one_hot = np.zeros((10, m))
 
@@ -110,12 +103,11 @@ def convert_to_one_hot(Y_labels):
 def convert_from_one_hot(Y_one_hot):
     '''Converts One Hot array back to labels
     '''
-
     n = Y_one_hot.shape[0]
     m = Y_one_hot.shape[1]
-    assert n == 10
-
     Y_labels = np.zeros((1, m))
+    
+    assert n == 10
 
     for i in range(m):
         for j in range(n):
@@ -139,14 +131,13 @@ def init_params(X, Y):
         W2 -- weight matrix of layer 2, shape output_layer x hidden_layer
         b2 -- bias vector of layer 2, shape output_layer x 1
     '''
-
     # TODO: Get hardcoded values from below rather from image dimension etc.
     n_x = X.shape[0]    # size of input layer - size of 1 image
     n_h = 15            # size of hidden layer
     n_y = Y.shape[0]    # size of output layer
     
     assert n_x == 784
-    assert n_y == 10
+    assert (n_y == 1) or (n_y == 10)    # really bad way to test. This works with binary- and multiclass-classfication
 
     # initial weight parameters need to be random, in order for network to work
     # TODO check which multipliers to add for Wx randoms
@@ -162,7 +153,7 @@ def init_params(X, Y):
     return weight_params
 
 
-def forward_propagation(X, weight_params):
+def forward_propagation(X, weight_params, classification_type):
     '''Forward propagation of the parameters
 
     Parameters:
@@ -172,7 +163,6 @@ def forward_propagation(X, weight_params):
     Returns:
     dictionary caching the result
     '''
-
     W1 = weight_params['W1']
     b1 = weight_params['b1']
     W2 = weight_params['W2']
@@ -181,17 +171,19 @@ def forward_propagation(X, weight_params):
     Z1 = np.dot(W1, X) + b1
     A1 = tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
-    #A2 = sigmoid(Z2)
-    A2 = softmax(Z2)
-    
-    # TODO: check whether cache should have b params as well
-    cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
+
+    if classification_type == Classification.BINARY:
+        A2 = sigmoid(Z2)
+    else:
+        A2 = softmax(Z2)    # for multiclass classification
 
     m = X[1].size # number of samples
     assert Z1.shape == (len(W1), m)
     assert Z2.shape == (len(W2), m)
     assert A1.shape == (len(W1), m)
     assert A2.shape == (len(W2), m)
+
+    cache_params = {'Z1': Z1, 'A1': A1, 'Z2': Z2, 'A2': A2}
 
     return cache_params
 
@@ -206,7 +198,6 @@ def compute_cost(Y, A):
     Returns:
         cost
     '''
-
     m = Y.shape[1]
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
@@ -217,6 +208,8 @@ def compute_cost(Y, A):
 
 
 def compute_cost_softmax(Y, A):
+    ''' Computes cost with softmax - used with multiclass classification on last layer
+    '''
     m = Y.shape[1]
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
     cost = 1/m * np.sum(log_calc)
@@ -237,7 +230,6 @@ def backward_propagation(X, Y, weight_params, cache_params):
     Returns:
         gradient_params --  parameters of the gradients (weight - derivative)
     '''
-
     m = X.shape[1]
 
     # Get weights parameters from forward propagations
@@ -271,7 +263,6 @@ def update_params(weight_params, gradient_params):
     Returns:
         weight_params -- updated weight and bias parameters
     '''
-
     learning_rate = 1.0
 
     # Get weights parameters
@@ -300,33 +291,30 @@ def update_params(weight_params, gradient_params):
 def run_model(X, Y, weight_params, iterations, classification_type):
     print("Cost:")
     cost = 0
-    cost_start = 0
-    cost_end = 0
+
     for i in range(iterations):
-        cache_params = forward_propagation(X, weight_params)
+        cache_params = forward_propagation(X, weight_params, classification_type)
+
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
         else:
             cost = compute_cost_softmax(Y, cache_params['A2'])
-        if i == 0:
-            cost_start = cost
+
+        cost = compute_cost(Y, cache_params['A2'])
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             #print('iteration: ' + str(i))
             print(cost)
     
-    cost_end = cost
-    print('cost_start - cost_end: ' + str(cost_start - cost_end))
     return weight_params
 
 
-def predict(X, weight_params):
-    cache = forward_propagation(X, weight_params)
+def predict(X, weight_params, classification_type):
+    cache = forward_propagation(X, weight_params, classification_type)
     A2 = cache['A2']
-
-    #print("A2")
+    #print("A2: ")
     #print(A2)
 
     # if value > 0.5, this is considered to be the number
@@ -354,3 +342,4 @@ def check_accuracy(Y, predictions):
 
     print("total_ones: " + str(total_ones))
     print("correct_ones: " + str(correct_ones))
+    print("%: " + str(correct_ones / total_ones *100))
