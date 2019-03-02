@@ -55,7 +55,6 @@ def softmax(Z):
     assert Z.shape[0] == 10
 
     m = Z.shape[1]
-    #divisor = np.zeros((1, m))
     divisor = np.sum(np.exp(Z), axis=0)
     divisor.shape = (1, m)
 
