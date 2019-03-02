@@ -210,7 +210,7 @@ def compute_cost(Y, A):
     m = Y.shape[1]
     log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     cost = -1/m * np.sum(log_calc)
-    #cost = np.squeeze(cost)
+    cost = np.squeeze(cost)
     assert(isinstance(cost, float))
 
     return cost
@@ -272,7 +272,7 @@ def update_params(weight_params, gradient_params):
         weight_params -- updated weight and bias parameters
     '''
 
-    learning_rate = 0.0001
+    learning_rate = 1.0
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -313,7 +313,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 100 == 0:
+        if i % 10 == 0:
             #print('iteration: ' + str(i))
             print(cost)
     
