@@ -313,8 +313,8 @@ def run_model(X, Y, weight_params, iterations, classification_type):
 
 
 def predict(X, weight_params, classification_type):
-    #print("predict::")
-    
+    '''
+    '''
     cache = forward_propagation(X, weight_params, classification_type)
     A2 = cache['A2']
 
@@ -327,20 +327,13 @@ def predict(X, weight_params, classification_type):
         predictions = np.argmax(A2, axis=0)
         predictions.shape = (1, predictions.size)
         predictions = convert_to_one_hot(predictions)
-    
-    #print("predictions shape")
-    #print(predictions.shape)
+        
     return predictions
 
 
 def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
-
-    #print('check_accuracy::')
-    #print(Y.shape)
-    #print(predictions.shape)
-
     # Binary classification accuracy checks, which portion of the 
     # Notice that % indicates not only true positives, but also true negatives
 
