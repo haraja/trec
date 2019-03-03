@@ -61,6 +61,9 @@ def softmax(Z):
     tZ = np.exp(Z)
     A = np.divide(tZ, divisor)
 
+    #TODO: check whether this could be done just with 1 line of code: 
+    # np.exp(Z) / np.sum(np.exp(Z), axis=0)
+
     return A
 
 
@@ -83,7 +86,7 @@ def convert_to_one_hot(Y_labels):
         0 0 0 0 0 0 0 0 0 1
 
     Args:
-    Y_labels -- array of labels - each label in single number
+    Y_labels -- array of labels - each label in single number. Needs to be shaped to be (1 x m) matrix
 
     Returns:
     Y_one_hot -- array of labels - each label represented in one-hot format
@@ -303,25 +306,30 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 100 == 0:
-            #print('iteration: ' + str(i))
+        if i % 10 == 0:
             print(cost)
     
     return weight_params
 
 
 def predict(X, weight_params, classification_type):
+    #print("predict::")
+    
     cache = forward_propagation(X, weight_params, classification_type)
     A2 = cache['A2']
-    #print("A2: ")
-    #print(A2)
 
-    # if value > 0.5, this is considered to be the number
-    predictions = np.round(A2)
-    #print("predictions: ")
-    #print(predictions)
-    #print("predictions mean: " + str(np.mean(predictions)))
+    if classification_type == Classification.BINARY:
+        # Binary classification: if value > 0.5, this is considered to be the match -> set to 1
+        predictions = np.round(A2)
+    else:
+        # Multiclass classification: the biggest number in each "softmax-column"is the most likely match
+        # -> here predictions will be n x m array, each column being one-hot vector
+        predictions = np.argmax(A2, axis=0)
+        predictions.shape = (1, predictions.size)
+        predictions = convert_to_one_hot(predictions)
     
+    #print("predictions shape")
+    #print(predictions.shape)
     return predictions
 
 
@@ -329,16 +337,28 @@ def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
 
-    print('check_accuracy::')
+    #print('check_accuracy::')
+    #print(Y.shape)
+    #print(predictions.shape)
 
-    correct_ones = 0
-    total_ones = 0
-    for i in range(Y.shape[1]):
-        if Y[0, i] == 1:
-            total_ones += 1
-            if predictions[0, i] == 1:
-                correct_ones += 1
+    # Binary classification accuracy checks, which portion of the 
+    # Notice that % indicates not only true positives, but also true negatives
 
-    print("total_ones: " + str(total_ones))
-    print("correct_ones: " + str(correct_ones))
-    print("%: " + str(correct_ones / total_ones *100))
+    # TODO: Check whether this can be done better with numpy.compare or such
+    correct_prediction = 0
+    m = Y.shape[1]
+
+    if Y.shape[0] == 1: # Binary classification
+        print("BIN")
+        for i in range(m):
+            if Y[0,i] == predictions[0,i]:
+                correct_prediction += 1
+    else: # Multiclass classification
+        print("MULTI")
+        for i in range(m):
+            if np.array_equal(Y[:,i], predictions[:,i]):
+                correct_prediction += 1
+        
+    print("total samples: " + str(m))
+    print("correct predictions: " + str(correct_prediction))
+    print("%: " + str(correct_prediction / m *100))
