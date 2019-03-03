@@ -8,62 +8,48 @@ import time
 import pickle
 import matplotlib.pyplot as plt
 from enums import Classification
-import sys
 import argparse
 
-'''
-TODO:
--fix relU functions - do not work currently
--implement regularization for cost function
--remove hardcodings from data read & array sizes
-'''
 
 # Read command line arguments. Possibility to select whether binary- or muticlass-clasification is used
 #   binary classification: only learns single value from training data, and predicts only that single value
 #   lears all numbers from training data and predicts any number value
 parser = argparse.ArgumentParser(description='Harris machine learning script.')
-parser.add_argument('-c', action='store', dest='classification_arg', default='binary', help='[binary | multiclass]')
+parser.add_argument('-bc', action='store_true', dest='bin_classification', help='binary classification')
+parser.add_argument('-s', action='store_true', dest='store_params', help='store learned params to file')
+parser.add_argument('-r', action='store_true', dest='read_params', help='read learned parameters from file')
 args = parser.parse_args()
 
-classification_type = Classification.BINARY
-if args.classification_arg == 'multiclass':
-    classification_type = Classification.MULTICLASS
+classification_type = Classification.MULTICLASS
+if args.bin_classification == True:
+    classification_type = Classification.BINARY
 
 # Get all training- and test-datasets
 X, X_test, Y, Y_test = helpers.get_data(classification_type)
 #helpers.show_number(X, mlfunc.convert_from_one_hot(Y), 59997)
 
 weight_params = mlfunc.init_params(X, Y)
-#print("weight params /1: ")
-#print(weight_params)
 
-# Either:
-# 1. train model to get new weight parameters
-start_time = time.time()
-weight_params = mlfunc.run_model(X, Y, weight_params, 20, classification_type)
-end_time = time.time()
-
-# Or:
-# 2. load weight parameters from earlier learned set
-'''
-with open('weight_params.pkl', 'rb') as f:
-    weight_params = pickle.load(f)
-'''
-
-#print("weight params: /2 ")
-#print(weight_params)
+if args.read_params == False:
+    # Train model to get new weight parameters
+    start_time = time.time()
+    weight_params = mlfunc.run_model(X, Y, weight_params, 100, classification_type)
+    end_time = time.time()
+    print("time elapsed: " + str(end_time - start_time))
+else:
+    # Load weight parameters from earlier learned set
+    with open('weight_params.pkl', 'rb') as f:
+        weight_params = pickle.load(f)
 
 predictions = mlfunc.predict(X, weight_params, classification_type)
 mlfunc.check_accuracy(Y, predictions)
-print("time elapsed: " + str(end_time - start_time))
 #print("predictions mean = " + str(np.mean(predictions)))
 
 print("TEST SET")
 predictions = mlfunc.predict(X_test, weight_params, classification_type)
 mlfunc.check_accuracy(Y_test, predictions)
 
-'''
-# write learned weight parameters into disk
-with open('weight_params.pkl', 'wb') as f:
-    pickle.dump(weight_params, f)
-'''
+if args.store_params == True:
+    # write learned weight parameters into disk
+    with open('weight_params.pkl', 'wb') as f:
+        pickle.dump(weight_params, f)

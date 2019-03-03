@@ -327,7 +327,7 @@ def predict(X, weight_params, classification_type):
         predictions = np.argmax(A2, axis=0)
         predictions.shape = (1, predictions.size)
         predictions = convert_to_one_hot(predictions)
-        
+
     return predictions
 
 
@@ -342,12 +342,12 @@ def check_accuracy(Y, predictions):
     m = Y.shape[1]
 
     if Y.shape[0] == 1: # Binary classification
-        print("BIN")
+        print("Binary Classification")
         for i in range(m):
             if Y[0,i] == predictions[0,i]:
                 correct_prediction += 1
     else: # Multiclass classification
-        print("MULTI")
+        print("Multiclass Classification")
         for i in range(m):
             if np.array_equal(Y[:,i], predictions[:,i]):
                 correct_prediction += 1
