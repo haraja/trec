@@ -28,13 +28,13 @@ def read_data(filename, dataoffset):
 
 
 def show_number(number_array, label_array, index):
-    """ Visualizes the number and prints its label
+    ''' Visualizes the number and prints its label
 
     Args:
         number_array -- array of numbers
         label_array -- array of labels for numbers
         index -- index of number in array
-    """
+    '''
 
     num = number_array[:,[index]]
     num.shape = (28, 28)

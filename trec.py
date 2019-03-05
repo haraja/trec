@@ -33,9 +33,9 @@ weight_params = mlfunc.init_params(X, Y)
 if args.read_params == False:
     # Train model to get new weight parameters
     start_time = time.time()
-    weight_params = mlfunc.run_model(X, Y, weight_params, 100, classification_type)
+    weight_params = mlfunc.run_model(X, Y, weight_params, 2000, classification_type)
     end_time = time.time()
-    print("time elapsed: " + str(end_time - start_time))
+    print('time elapsed: ' + str(end_time - start_time))
 else:
     # Load weight parameters from earlier learned set
     with open('weight_params.pkl', 'rb') as f:
@@ -43,9 +43,9 @@ else:
 
 predictions = mlfunc.predict(X, weight_params, classification_type)
 mlfunc.check_accuracy(Y, predictions)
-#print("predictions mean = " + str(np.mean(predictions)))
+#print('predictions mean = ' + str(np.mean(predictions)))
 
-print("TEST SET")
+print('TEST SET')
 predictions = mlfunc.predict(X_test, weight_params, classification_type)
 mlfunc.check_accuracy(Y_test, predictions)
 

@@ -86,7 +86,7 @@ def convert_to_one_hot(Y_labels):
         0 0 0 0 0 0 0 0 0 1
 
     Args:
-    Y_labels -- array of labels - each label in single number. Needs to be shaped to be (1 x m) matrix
+    Y_labels -- 1 x m array of labels. Each label is single number
 
     Returns:
     Y_one_hot -- array of labels - each label represented in one-hot format
@@ -291,7 +291,7 @@ def update_params(weight_params, gradient_params):
 
 
 def run_model(X, Y, weight_params, iterations, classification_type):
-    print("Cost:")
+    print('Cost:')
     cost = 0
 
     for i in range(iterations):
@@ -307,7 +307,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         weight_params = update_params(weight_params, gradient_params)
 
         if i % 10 == 0:
-            print(cost)
+            print('%.8f' % cost)
     
     return weight_params
 
@@ -322,7 +322,7 @@ def predict(X, weight_params, classification_type):
         # Binary classification: if value > 0.5, this is considered to be the match -> set to 1
         predictions = np.round(A2)
     else:
-        # Multiclass classification: the biggest number in each "softmax-column"is the most likely match
+        # Multiclass classification: the biggest number in each 'softmax-column' is the most likely match
         # -> here predictions will be n x m array, each column being one-hot vector
         predictions = np.argmax(A2, axis=0)
         predictions.shape = (1, predictions.size)
@@ -334,24 +334,25 @@ def predict(X, weight_params, classification_type):
 def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
-    # Binary classification accuracy checks, which portion of the 
-    # Notice that % indicates not only true positives, but also true negatives
-
     # TODO: Check whether this can be done better with numpy.compare or such
     correct_prediction = 0
     m = Y.shape[1]
 
     if Y.shape[0] == 1: # Binary classification
-        print("Binary Classification")
+        print('Binary Classification')
         for i in range(m):
+            # Notice that % indicates not only true positives, but also true negatives
             if Y[0,i] == predictions[0,i]:
                 correct_prediction += 1
     else: # Multiclass classification
-        print("Multiclass Classification")
+        print('Multiclass Classification')
         for i in range(m):
             if np.array_equal(Y[:,i], predictions[:,i]):
                 correct_prediction += 1
         
-    print("total samples: " + str(m))
-    print("correct predictions: " + str(correct_prediction))
-    print("%: " + str(correct_prediction / m *100))
+    accuracy = correct_prediction / m *100
+    print('total samples: ' + str(m))
+    print('correct predictions: ' + str(correct_prediction))
+    print('%: ' + str(accuracy))
+
+    return accuracy
