@@ -1,0 +1,8 @@
+
+TODO - next to be considered:
+-fix relU functions - does not work currently
+-implement regularization for cost function (? does this make any sense?)
+-remove hardcodings from data read & array sizes
+-ADAM-algorithm for backpropagation
+-support for more layers in neural next
+-
