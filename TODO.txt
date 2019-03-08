@@ -1,8 +1,19 @@
 
 TODO - next to be considered:
+-input for single image, check that against learned parameter set
+--1. hardcode path; image always 28x28 pixels - DONE
+--2. path/image name from input parameter
+--3. resize image to fit 28x28 - DONE
+--4. different image sizes - meaning different input-array n-size
+
+-with -i parameter input the file name
+-support for different image-classes (not only numbers)
+--different output layer n-sizes, needs to be checked from each image
+
+-----------------
+-support for more layers in neural next
 -fix relU functions - does not work currently
 -implement regularization for cost function (? does this make any sense?)
 -remove hardcodings from data read & array sizes
 -ADAM-algorithm for backpropagation
--support for more layers in neural next
 -

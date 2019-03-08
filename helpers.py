@@ -6,9 +6,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mlfunc
 from enums import Classification
+from PIL import Image
+import PIL 
+
 
 # TODO: Make this dynamic; get offset from the file itself
-def read_data(filename, dataoffset):
+def read_mnist(filename, dataoffset):
     '''Read test- and training-sets (images, labels) from idx-file into numpy-array
      mnist datasets & spec: http://yann.lecun.com/exdb/mnist/
      -images is 28x28px size, each pixel valued 0-255
@@ -21,7 +24,6 @@ def read_data(filename, dataoffset):
     Returns:
         numpy-array of payload
      '''
-
     f = open(filename, 'rb')
     f.seek(dataoffset)
     return np.fromfile(f, dtype = np.dtype(np.uint8))
@@ -35,7 +37,6 @@ def show_number(number_array, label_array, index):
         label_array -- array of labels for numbers
         index -- index of number in array
     '''
-
     num = number_array[:,[index]]
     num.shape = (28, 28)
     print(label_array[0, index])
@@ -44,8 +45,8 @@ def show_number(number_array, label_array, index):
     plt.show()
 
 
-def get_data(classification_type):
-    ''' reads data from files and returns in suitable format
+def mnist_to_array(classification_type):
+    ''' reads data from mnist-files and returns in suitable numpy array
 
     Return:
     X       -- learning set data
@@ -59,11 +60,10 @@ def get_data(classification_type):
         Y       -- learning set labels
         Y_test  -- test set labels
     '''
-    
-    X = read_data('train-images.idx3-ubyte', 16)
-    Y = read_data('train-labels.idx1-ubyte', 8)
-    X_test = read_data('t10k-images.idx3-ubyte', 16)
-    Y_test = read_data('t10k-labels.idx1-ubyte', 8)
+    X = read_mnist('train-images.idx3-ubyte', 16)
+    Y = read_mnist('train-labels.idx1-ubyte', 8)
+    X_test = read_mnist('t10k-images.idx3-ubyte', 16)
+    Y_test = read_mnist('t10k-labels.idx1-ubyte', 8)
 
     # normalize the data 0..1
     X = X/255
@@ -93,3 +93,16 @@ def get_data(classification_type):
     #show_number(X, Y, np.random.randint(0, Y.size))
 
     return X, X_test, Y, Y_test
+
+
+def jpg_to_array():
+    ''' reads data from mnist-files and returns in suitable numpy array
+    '''
+    with Image.open("input_image.jpg") as image:
+        #image_transformed = image.transform((28, 28), PIL.Image.AFFINE)
+        image = image.resize((28,28))
+        image = image.convert('L') # converts to 8-bit black and white
+        image_array = np.fromstring(image.tobytes(), dtype=np.uint8)
+        image_array.shape = (image_array.size, 1)       
+    return image_array
+    

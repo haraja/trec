@@ -155,7 +155,7 @@ def init_params(X, Y):
     return weight_params
 
 
-def forward_propagation(X, weight_params, classification_type):
+def forward_propagation(X, weight_params, classification_type=Classification.MULTICLASS):
     '''Forward propagation of the parameters
 
     Parameters:
@@ -335,6 +335,8 @@ def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
     # TODO: Check whether this can be done better with numpy.compare or such
+    print('check_accuracy - Y shape')
+    print(Y.shape)
     correct_prediction = 0
     m = Y.shape[1]
 
@@ -356,3 +358,14 @@ def check_accuracy(Y, predictions):
     print('%: ' + str(accuracy))
 
     return accuracy
+
+
+def predict_single(X, weight_params):
+    '''
+    '''
+    cache = forward_propagation(X, weight_params)
+    A2 = cache['A2']
+    prediction = np.argmax(A2, axis=0)
+    propability = A2[prediction]
+    
+    return prediction, propability
