@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mlfunc
 from enums import Classification
-from PIL import Image
+from PIL import Image, ImageOps
 import PIL 
 
 
@@ -95,14 +95,15 @@ def mnist_to_array(classification_type):
     return X, X_test, Y, Y_test
 
 
-def jpg_to_array():
+def jpg_to_array(file_name):
     ''' reads data from mnist-files and returns in suitable numpy array
     '''
-    with Image.open("input_image.jpg") as image:
+    with Image.open(file_name) as image:
         #image_transformed = image.transform((28, 28), PIL.Image.AFFINE)
         image = image.resize((28,28))
         image = image.convert('L') # converts to 8-bit black and white
-        image_array = np.fromstring(image.tobytes(), dtype=np.uint8)
+        image_invert = ImageOps.invert(image)
+        image_array = np.fromstring(image_invert.tobytes(), dtype=np.uint8)
         image_array.shape = (image_array.size, 1)       
     return image_array
     

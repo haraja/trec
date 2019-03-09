@@ -18,8 +18,8 @@ parser = argparse.ArgumentParser(description='Harris machine learning script.')
 parser.add_argument('-bc', action='store_true', dest='bin_classification', help='binary classification')
 parser.add_argument('-s', action='store_true', dest='store_params', help='store learned params to file')
 parser.add_argument('-r', action='store_true', dest='read_params', help='read learned parameters from file')
-#TODO: Complete -i option form import image - compare this single image with learned parameters
-parser.add_argument('-i', action='store_true', dest='image_input', help='evaluate input_image.jpg against learned parameter set')
+parser.add_argument('-i', type=str, dest='file_name', help='evaluate image [FILE_NAME] against learned parameter set')
+#parser.add_argument('-i', action='store_true', dest='image_input', help='evaluate input_image.jpg against learned parameter set')
 args = parser.parse_args()
 
 classification_type = Classification.MULTICLASS
@@ -32,27 +32,30 @@ X, X_test, Y, Y_test = helpers.mnist_to_array(classification_type)
 
 weight_params = mlfunc.init_params(X, Y)
 
-if args.read_params or args.image_input:
+if args.read_params or args.file_name:
     # Read weight parameters from earlier learned set
     with open('weight_params.pkl', 'rb') as f:
         weight_params = pickle.load(f)
 else:
     # Train model to get new weight parameters
     start_time = time.time()
-    weight_params = mlfunc.run_model(X, Y, weight_params, 2000, classification_type)
+    weight_params = mlfunc.run_model(X, Y, weight_params, 100, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
 
-if args.image_input:
-    X_from_input = helpers.jpg_to_array()
-    X_reshaped = X_from_input
+if args.file_name:
+    X_from_input = helpers.jpg_to_array(args.file_name)
+    print(X_from_input.shape)
+    X_reshaped = np.copy(X_from_input)
     X_reshaped.shape = (28, 28)
     plt.imshow(X_reshaped, cmap='gray')
     plt.show()
     
     print('INPUT FILE')
+    print(X_from_input.shape)
     prediction, propability = mlfunc.predict_single(X_from_input, weight_params)
     print('Number is: %d, propability: %f' % (prediction, propability*100))
+    #print(X_from_input)
 else:
     print('TRAINING SET')
     predictions = mlfunc.predict(X, weight_params, classification_type)

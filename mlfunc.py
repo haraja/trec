@@ -365,6 +365,8 @@ def predict_single(X, weight_params):
     '''
     cache = forward_propagation(X, weight_params)
     A2 = cache['A2']
+    print('predict_single - A2')
+    print(A2)
     prediction = np.argmax(A2, axis=0)
     propability = A2[prediction]
     
