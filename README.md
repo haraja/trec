@@ -18,3 +18,9 @@ Notice, that files need to be extracted and placed in same folder with py-files
 This project is work in progress. Some implementation details:
 -Only one hidden layer is initially supported
 -Cost is minimized with gradient descent algorithm
+
+## Code notation
+X: input array
+Y: marks labels
+training_set: st used to train the model (X, Y in code are training sets)
+*_test: set used to evaluate correctness of trained model

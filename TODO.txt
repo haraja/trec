@@ -2,7 +2,7 @@
 TODO - next to be considered:
 -input for single image, check that against learned parameter set
 --1. hardcode path; image always 28x28 pixels - DONE
---2. path/image name from input parameter
+--2. path/image name from input parameter - DONE
 --3. resize image to fit 28x28 - DONE
 --4. different image sizes - meaning different input-array n-size
 
