@@ -39,8 +39,8 @@ def relu(Z):
 def relu_derivative(Z):
     ''' Dericative of ReLU activation function
     '''
-    Z[Z >= 0] = 1
-    Z[Z < 0] = 0
+    Z[Z <= 0] = 0
+    Z[Z > 0] = 1
     return Z
 
 
@@ -144,8 +144,12 @@ def init_params(X, Y):
     # initial weight parameters need to be random, in order for network to work
     # TODO check which multipliers to add for Wx randoms
     np.random.seed()
-    W1 = np.random.rand(n_h, n_x) * 0.01    # weight multipliers for hidden layer
-    W2 = np.random.rand(n_y, n_h) * 0.01    # weight multipliers for output layer
+    # weight multipliers for hidden layer. 
+    # The np.sqrt... multiplier in the end is 'Xavier initialization'. This helps to avoid vanishing/exploding gradients
+    # ...with relu, this should be np.sqrt(1/n_x)
+    W1 = np.random.rand(n_h, n_x) * np.sqrt(1/n_x)  
+    # weight multipliers for output layer. The np.sqrt... - same comment as above
+    W2 = np.random.rand(n_y, n_h) * np.sqrt(1/n_h)  
     # b can be 0 in beginning, there is no reason to randomize that
     b1 = np.zeros((n_h, 1))                 # bias multiplier for hidden layer
     b2 = np.zeros((n_y, 1))                 # bias multiplier for output layer
@@ -221,7 +225,8 @@ def compute_cost_softmax(Y, A):
 
 
 def backward_propagation(X, Y, weight_params, cache_params):
-    '''Backward propagation computes delta between true values and computed weighted values
+    '''Backward propagation using gradient descent. 
+       Computes delta between true values and computed weighted values
 
     Args:
         X -- input parameters (images)
@@ -306,7 +311,7 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             print('%.8f' % cost)
     
     return weight_params
