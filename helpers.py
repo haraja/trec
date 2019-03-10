@@ -104,6 +104,14 @@ def jpg_to_array(file_name):
         image = image.convert('L') # converts to 8-bit black and white
         image_invert = ImageOps.invert(image)
         image_array = np.fromstring(image_invert.tobytes(), dtype=np.uint8)
+        image_array = tune_image(image_array)
         image_array.shape = (image_array.size, 1)       
     return image_array
-    
+
+
+def tune_image(image_array):
+    ''' tune the image to be better fit for evaluation
+    '''
+    # initial very simple implementation. Removes background noise, but loses part of details as well
+    image_array[image_array < 100] = 0
+    return image_array

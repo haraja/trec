@@ -8,12 +8,11 @@ import time
 import pickle
 import matplotlib.pyplot as plt
 from enums import Classification
-import argparse
 
 
 # Read command line arguments
 #   binary classification: only learns single value from training data, and predicts only that single value
-#   lears all numbers from training data and predicts any number value
+#   multiclass classification lears all numbers from training data and predicts any number value
 parser = argparse.ArgumentParser(description='Harris machine learning script.')
 parser.add_argument('-bc', action='store_true', dest='bin_classification', help='binary classification')
 parser.add_argument('-s', action='store_true', dest='store_params', help='store learned params to file')
@@ -39,7 +38,7 @@ if args.read_params or args.file_name:
 else:
     # Train model to get new weight parameters
     start_time = time.time()
-    weight_params = mlfunc.run_model(X, Y, weight_params, 100, classification_type)
+    weight_params = mlfunc.run_model(X, Y, weight_params, 10, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
 
