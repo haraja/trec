@@ -6,7 +6,7 @@ TODO - next to be considered:
 --3. resize image to fit 28x28 - DONE
 --4. different image sizes - meaning different input-array n-size
 
--with -i parameter input the file name
+-with -i parameter input the file name - DONE
 -support for different image-classes (not only numbers)
 --different output layer n-sizes, needs to be checked from each image
 

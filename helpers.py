@@ -1,5 +1,5 @@
 '''
-Misc helper functions
+General helper functions
 '''
 
 import numpy as np
