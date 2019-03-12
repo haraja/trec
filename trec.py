@@ -37,8 +37,9 @@ if args.read_params or args.file_name:
         weight_params = pickle.load(f)
 else:
     # Train model to get new weight parameters
+    lambd = 0.1
     start_time = time.time()
-    weight_params = mlfunc.run_model(X, Y, weight_params, 100, classification_type)
+    weight_params = mlfunc.run_model(X, Y, weight_params, 2000, lambd, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
 

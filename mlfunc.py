@@ -213,23 +213,24 @@ def compute_cost(Y, A):
     return cost
 
 
-def compute_cost_softmax(Y, A):
+def compute_cost_softmax(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
     '''
     m = Y.shape[1]
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
-    cost = 1/m * np.sum(log_calc)
+    non_regularized_cost = 1/m * np.sum(log_calc)
+
+    W1 = weight_params['W1']
+    W2 = weight_params['W2']
+    l2_regularization_cost = 1/m * lambd/2 * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
     
-    '''
-    lambd = 0.1
-    l2_regularization_cost = 
-    '''
+    cost = non_regularized_cost + l2_regularization_cost
     assert(isinstance(cost, float))
 
     return cost
 
 
-def backward_propagation(X, Y, weight_params, cache_params):
+def backward_propagation(X, Y, weight_params, cache_params, lambd):
     '''Backward propagation using gradient descent. 
        Computes delta between true values and computed weighted values
 
@@ -254,10 +255,10 @@ def backward_propagation(X, Y, weight_params, cache_params):
 
     # Calculate derivatives
     dZ2 = A2 - Y
-    dW2 = 1/m * np.dot(dZ2, A1.T)
+    dW2 = 1/m * np.dot(dZ2, A1.T) + lambd / m * W2
     db2 = 1/m * np.sum(dZ2, axis = 1, keepdims = True)
     dZ1 = np.dot(W2.T, dZ2) * tanh_derivative(A1)   # TODO: check whether this is correct - should be _activate(Z1)?
-    dW1 = 1/m * np.dot(dZ1, X.T)
+    dW1 = 1/m * np.dot(dZ1, X.T) + lambd / m * W1
     db1 = 1/m * np.sum(dZ1, axis = 1, keepdims = True)
 
     gradient_params = {'dW1': dW1, 'db1': db1, 'dW2': dW2, 'db2': db2}
@@ -300,7 +301,7 @@ def update_params(weight_params, gradient_params):
     return weight_params
 
 
-def run_model(X, Y, weight_params, iterations, classification_type):
+def run_model(X, Y, weight_params, iterations, lambd, classification_type):
     print('Cost:')
     cost = 0
 
@@ -310,12 +311,12 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
         else:
-            cost = compute_cost_softmax(Y, cache_params['A2'])
+            cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
 
-        gradient_params = backward_propagation(X, Y, weight_params, cache_params)
+        gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             print('%.8f' % cost)
     
     return weight_params
@@ -344,8 +345,8 @@ def check_accuracy(Y, predictions):
     '''Checks the accuracy of trained network
     '''
     # TODO: Check whether this can be done better with numpy.compare or such
-    print('check_accuracy - Y shape')
-    print(Y.shape)
+    #print('check_accuracy - Y shape')
+    #print(Y.shape)
     correct_prediction = 0
     m = Y.shape[1]
 
@@ -362,8 +363,8 @@ def check_accuracy(Y, predictions):
                 correct_prediction += 1
         
     accuracy = correct_prediction / m *100
-    print('total samples: ' + str(m))
-    print('correct predictions: ' + str(correct_prediction))
+    #print('total samples: ' + str(m))
+    #print('correct predictions: ' + str(correct_prediction))
     print('%: ' + str(accuracy))
 
     return accuracy
