@@ -195,7 +195,7 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
 
 
 def compute_cost(Y, A):
-    '''Computes cost of for the forward propagation
+    '''Computes cost of for the forward propagation - used with binary classification
 
     Args:
         Y -- true labels
@@ -219,6 +219,11 @@ def compute_cost_softmax(Y, A):
     m = Y.shape[1]
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
     cost = 1/m * np.sum(log_calc)
+    
+    '''
+    lambd = 0.1
+    l2_regularization_cost = 
+    '''
     assert(isinstance(cost, float))
 
     return cost
@@ -307,11 +312,10 @@ def run_model(X, Y, weight_params, iterations, classification_type):
         else:
             cost = compute_cost_softmax(Y, cache_params['A2'])
 
-        cost = compute_cost(Y, cache_params['A2'])
         gradient_params = backward_propagation(X, Y, weight_params, cache_params)
         weight_params = update_params(weight_params, gradient_params)
 
-        if i % 100 == 0:
+        if i % 10 == 0:
             print('%.8f' % cost)
     
     return weight_params
