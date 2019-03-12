@@ -146,7 +146,7 @@ def init_params(X, Y):
     np.random.seed()
     # weight multipliers for hidden layer. 
     # The np.sqrt... multiplier in the end is 'Xavier initialization'. This helps to avoid vanishing/exploding gradients
-    # ...with relu, this should be np.sqrt(1/n_x)
+    # ...with relu, this should be np.sqrt(2/n_x)
     W1 = np.random.rand(n_h, n_x) * np.sqrt(1/n_x)  
     # weight multipliers for output layer. The np.sqrt... - same comment as above
     W2 = np.random.rand(n_y, n_h) * np.sqrt(1/n_h)  

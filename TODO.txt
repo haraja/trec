@@ -11,6 +11,9 @@ TODO - next to be considered:
 --different output layer n-sizes, needs to be checked from each image
 
 -----------------
+-to reduce overfitting (test set does not get closer to learning set after a few thousand iterations):
+--L2 regularization
+--drop-out regularization
 -support for more layers in neural next
 -fix relU functions - does not work currently
 -implement regularization for cost function (? does this make any sense?)
