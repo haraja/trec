@@ -276,7 +276,7 @@ def update_params(weight_params, gradient_params):
     Returns:
         weight_params -- updated weight and bias parameters
     '''
-    learning_rate = 1.0
+    learning_rate = 0.1
 
     # Get weights parameters
     W1 = weight_params['W1']
