@@ -4,6 +4,7 @@ Machine learning functions
 
 import numpy as np
 from enums import Classification
+import matplotlib.pyplot as plt
 
 
 def sigmoid(Z):
@@ -120,7 +121,7 @@ def convert_from_one_hot(Y_one_hot):
     return Y_labels
 
 
-def init_params(X, Y):
+def init_params(X, Y, hidden_layer_n):
     '''Initializes the parameter sof neural net
 
     Initially implemented for neural network with 1 hidden layer only
@@ -134,9 +135,9 @@ def init_params(X, Y):
         b2 -- bias vector of layer 2, shape output_layer x 1
     '''
     # TODO: Get hardcoded values from below rather from image dimension etc.
-    n_x = X.shape[0]    # size of input layer - size of 1 image
-    n_h = 15            # size of hidden layer
-    n_y = Y.shape[0]    # size of output layer
+    n_x = X.shape[0]     # size of input layer - size of 1 image
+    n_h = hidden_layer_n # size of hidden layer
+    n_y = Y.shape[0]     # size of output layer
     
     assert n_x == 784
     assert (n_y == 1) or (n_y == 10)    # really bad way to test. This works with binary- and multiclass-classfication
@@ -266,7 +267,7 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
     return gradient_params
 
 
-def update_params(weight_params, gradient_params):
+def update_params(weight_params, gradient_params, learning_rate):
     '''Updates weight parameters from the gradient
 
     Args:
@@ -276,7 +277,6 @@ def update_params(weight_params, gradient_params):
     Returns:
         weight_params -- updated weight and bias parameters
     '''
-    learning_rate = 0.1
 
     # Get weights parameters
     W1 = weight_params['W1']
@@ -301,9 +301,10 @@ def update_params(weight_params, gradient_params):
     return weight_params
 
 
-def run_model(X, Y, weight_params, iterations, lambd, classification_type):
+def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type):
     print('Cost:')
     cost = 0
+    costs = []
 
     for i in range(iterations):
         cache_params = forward_propagation(X, weight_params, classification_type)
@@ -314,10 +315,18 @@ def run_model(X, Y, weight_params, iterations, lambd, classification_type):
             cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
 
         gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
-        weight_params = update_params(weight_params, gradient_params)
+        weight_params = update_params(weight_params, gradient_params, learning_rate)
 
-        if i % 100 == 0:
+        if i % 10 == 0:
             print('%.8f' % cost)
+        
+        costs.append(cost)
+    
+    plt.plot(costs)
+    plt.ylabel('cost')
+    plt.xlabel('iterations')
+    plt.title("Cost diagram")
+    plt.show()
     
     return weight_params
 

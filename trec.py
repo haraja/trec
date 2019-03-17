@@ -8,7 +8,11 @@ import time
 import pickle
 import matplotlib.pyplot as plt
 from enums import Classification
+import json
 
+
+with open('config.json') as f:
+    config = json.load(f)
 
 # Read command line arguments
 #   binary classification: only learns single value from training data, and predicts only that single value
@@ -29,17 +33,21 @@ if args.bin_classification == True:
 X, X_test, Y, Y_test = helpers.mnist_to_array(classification_type)
 #helpers.show_number(X, mlfunc.convert_from_one_hot(Y), 2)
 
-weight_params = mlfunc.init_params(X, Y)
-
 if args.read_params or args.file_name:
     # Read weight parameters from earlier learned set
     with open('weight_params.pkl', 'rb') as f:
         weight_params = pickle.load(f)
 else:
     # Train model to get new weight parameters
-    lambd = 0.1
+    
+    hidden_layer_n = config['hyperparameters']['hidden_layer_n']
+    learning_rate = config['hyperparameters']['learning_rate']
+    lambd = config['hyperparameters']['lambd']
+    iterations = config['other']['iterations']
+    
     start_time = time.time()
-    weight_params = mlfunc.run_model(X, Y, weight_params, 2000, lambd, classification_type)
+    weight_params = mlfunc.init_params(X, Y, hidden_layer_n)
+    weight_params = mlfunc.run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
 
