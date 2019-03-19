@@ -9,3 +9,7 @@ test.py
 *.xlsx
 *.pkl
 *.jpg
+
+# No need to update config file every time I change anything to test
+# Comment line below when need to commit and push file again
+config.json

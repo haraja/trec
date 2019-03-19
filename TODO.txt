@@ -1,5 +1,6 @@
 
-TODO - next to be considered:
+TODO 
+--- next to be considered: ---
 -input for single image, check that against learned parameter set
 --1. hardcode path; image always 28x28 pixels - DONE
 --2. path/image name from input parameter - DONE
@@ -10,7 +11,12 @@ TODO - next to be considered:
 -support for different image-classes (not only numbers)
 --different output layer n-sizes, needs to be checked from each image
 
------------------
+--- other ---
+-different datasets: 
+--FASHION-MNIST
+--CIFAR
+
+--- for model ---
 -to reduce overfitting (test set does not get closer to learning set after a few thousand iterations):
 --L2 regularization
 --drop-out regularization
