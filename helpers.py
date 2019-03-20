@@ -33,8 +33,6 @@ def read_mnist(filename, dataoffset):
     return read_file
 
 
-
-
 def show_number(number_array, label_array, index):
     ''' Visualizes the number and prints its label
 
@@ -77,9 +75,9 @@ def mnist_to_array(classification_type):
 
     # data is arranged in n x m arrays (columns x rows)
     #   n = dimensions of single sample. For example in 28x28 image this equals 784
-    #   m = number of samples
-    X.shape = (60000, 784)
-    X_test.shape = (10000, 784)
+    #   m = number of samples. Can be easily checked by getting munber of elements in labels-array
+    X.shape = (Y.size, int(X.size/Y.size))
+    X_test.shape = (Y_test.size, int(X.size/Y.size))
     X = X.T
     X_test = X_test.T
     # labels are arranged in row vectors
