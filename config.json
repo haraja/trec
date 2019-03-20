@@ -1,11 +1,11 @@
 {
     "hyperparameters":{
-        "learning_rate":0.8,
+        "learning_rate":1.0,
         "lambd":0.1,
         "hidden_layer_n":50
     },
     "other":{
-        "iterations":100,
+        "iterations":30,
         "print_cost":true
     }
 }

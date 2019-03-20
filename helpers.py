@@ -8,25 +8,31 @@ import mlfunc
 from enums import Classification
 from PIL import Image, ImageOps
 import PIL 
+import os
+import gzip
 
 
-# TODO: Make this dynamic; get offset from the file itself
 def read_mnist(filename, dataoffset):
     '''Read test- and training-sets (images, labels) from idx-file into numpy-array
+     Data-files are expected to be .gz files in 'data'-folder
      mnist datasets & spec: http://yann.lecun.com/exdb/mnist/
      -images is 28x28px size, each pixel valued 0-255
      -label is a single number, valued 0-9
 
     Args:
         filename -- name of the binary datafile
-        dataoffset -- offset, after which the data payload in file starts
+        dataoffset -- offset, after which the payload data in file starts
 
     Returns:
         numpy-array of payload
-     '''
-    f = open(filename, 'rb')
-    f.seek(dataoffset)
-    return np.fromfile(f, dtype = np.dtype(np.uint8))
+    '''
+    file_path = os.path.join('data', filename)
+    with gzip.open(file_path, 'rb') as f:
+        read_file = np.frombuffer(f.read(), dtype=np.uint8, offset=dataoffset)
+
+    return read_file
+
+
 
 
 def show_number(number_array, label_array, index):
@@ -60,10 +66,10 @@ def mnist_to_array(classification_type):
         Y       -- learning set labels
         Y_test  -- test set labels
     '''
-    X = read_mnist('train-images.idx3-ubyte', 16)
-    Y = read_mnist('train-labels.idx1-ubyte', 8)
-    X_test = read_mnist('t10k-images.idx3-ubyte', 16)
-    Y_test = read_mnist('t10k-labels.idx1-ubyte', 8)
+    X = read_mnist('train-images-idx3-ubyte.gz', 16)
+    Y = read_mnist('train-labels-idx1-ubyte.gz', 8)
+    X_test = read_mnist('t10k-images-idx3-ubyte.gz', 16)
+    Y_test = read_mnist('t10k-labels-idx1-ubyte.gz', 8)
 
     # normalize the data 0..1
     X = X/255
