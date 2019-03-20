@@ -11,8 +11,8 @@ usage of for-loops is avoided and instead matrix-operations are preferred.
 Needed data of the character-sets, which is used for learning, is from MNIST.
 This data is not included in this Git project. You need to download the sets from:
 http://yann.lecun.com/exdb/mnist/
+...and place the .gz-files to data-folder
 
-Notice, that files need to be extracted and placed in same folder with py-files
 
 ## Status
 This project is work in progress. Some implementation details:
