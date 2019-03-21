@@ -2,27 +2,28 @@
 TODO 
 --- next to be considered: ---
 -input for single image, check that against learned parameter set
---1. hardcode path; image always 28x28 pixels - DONE
---2. path/image name from input parameter - DONE
---3. resize image to fit 28x28 - DONE
 --4. different image sizes - meaning different input-array n-size
 
 -with -i parameter input the file name - DONE
--support for different image-classes (not only numbers)
---different output layer n-sizes, needs to be checked from each image
+-support for different image-classes (other than 10 output nodes)
 
 --- other ---
 -different datasets: 
---FASHION-MNIST
 --CIFAR
 
 --- for model ---
 -to reduce overfitting (test set does not get closer to learning set after a few thousand iterations):
---L2 regularization
+
 --drop-out regularization
 -support for more layers in neural next
--fix relU functions - does not work currently
--implement regularization for cost function (? does this make any sense?)
+-fix relU functions - does not work currently?
 -remove hardcodings from data read & array sizes
 -ADAM-algorithm for backpropagation
--
+
+
+DONE
+--1. hardcode path; image always 28x28 pixels - DONE
+--2. path/image name from input parameter - DONE
+--3. resize image to fit 28x28 - DONE
+--L2 regularization - DONE
+--FASHION-MNIST - done

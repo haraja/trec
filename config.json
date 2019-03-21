@@ -5,7 +5,7 @@
         "hidden_layer_n":15
     },
     "other":{
-        "iterations":20,
+        "iterations":200,
         "print_cost":true
     }
 }

@@ -317,7 +317,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             print('%.8f' % cost)
         
         costs.append(cost)
