@@ -10,6 +10,9 @@ TODO
 --- other ---
 -different datasets: 
 --CIFAR
+  --refer to: "Learning Multiple Layers of Features from Tiny Images", Alex Krizhevsky, 2009.
+  --
+
 
 --- for model ---
 -to reduce overfitting (test set does not get closer to learning set after a few thousand iterations):

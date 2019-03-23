@@ -40,13 +40,14 @@ if args.read_params or args.file_name:
 else:
     # Train model to get new weight parameters
     
-    hidden_layer_n = config['hyperparameters']['hidden_layer_n']
     learning_rate = config['hyperparameters']['learning_rate']
     lambd = config['hyperparameters']['lambd']
+    network_layers = config['hyperparameters']['network_layers']
+    n_hidden_layer = config['hyperparameters']['n_hidden_layer']
     iterations = config['other']['iterations']
     
     start_time = time.time()
-    weight_params = mlfunc.init_params(X, Y, hidden_layer_n)
+    weight_params = mlfunc.init_params(X.shape[0], Y.shape[0], n_hidden_layer, network_layers)
     weight_params = mlfunc.run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))

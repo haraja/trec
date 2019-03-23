@@ -121,33 +121,34 @@ def convert_from_one_hot(Y_one_hot):
     return Y_labels
 
 
-def init_params(X, Y, hidden_layer_n):
+def init_params(n_x, n_y, n_h, network_layers):
     '''Initializes the parameter sof neural net
-
     Initially implemented for neural network with 1 hidden layer only
     (and one input and one output layer)
 
-    Returns:
-    weight_params -- dictionary containing all weight parameters
+    Parameters:
+        n_x -- size of input layer, dimension (size) of one input image
+        n_y -- size of output layer, amount of possible labels
+        n_h -- size of all hidden layers
+        network_layers -- number of network layers, excluding input layer
+                          For example with 1 hidden- + output-layer this would be 2
+
+    Returns: weight_params -- dictionary containing all weight parameters
         W1 -- weight matrix of layer 1, shape: hidden_layer x input_layer
         b1 -- bias vector of layer 1, shape: hidden_layer x 1
-        W2 -- weight matrix of layer 2, shape output_layer x hidden_layer
-        b2 -- bias vector of layer 2, shape output_layer x 1
+        ...
+        Wn -- weight matrix of layer n, shape output_layer x hidden_layer
+        bn -- bias vector of layer n, shape output_layer x 1
     '''
-    # TODO: Get hardcoded values from below rather from image dimension etc.
-    n_x = X.shape[0]     # size of input layer - size of 1 image
-    n_h = hidden_layer_n # size of hidden layer
-    n_y = Y.shape[0]     # size of output layer
-    
+  
     assert n_x == 784
     assert (n_y == 1) or (n_y == 10)    # really bad way to test. This works with binary- and multiclass-classfication
 
-    # initial weight parameters need to be random, in order for network to work
-    # TODO check which multipliers to add for Wx randoms
     np.random.seed()
     # weight multipliers for hidden layer. 
     # The np.sqrt... multiplier in the end is 'Xavier initialization'. This helps to avoid vanishing/exploding gradients
     # ...with relu, this should be np.sqrt(2/n_x)
+
     W1 = np.random.rand(n_h, n_x) * np.sqrt(1/n_x)  
     # weight multipliers for output layer. The np.sqrt... - same comment as above
     W2 = np.random.rand(n_y, n_h) * np.sqrt(1/n_h)  
@@ -155,7 +156,8 @@ def init_params(X, Y, hidden_layer_n):
     b1 = np.zeros((n_h, 1))                 # bias multiplier for hidden layer
     b2 = np.zeros((n_y, 1))                 # bias multiplier for output layer
 
-    weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
+    for i in range(1, n_h):
+        weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
 
     return weight_params
 
