@@ -2,11 +2,10 @@
     "hyperparameters":{
         "learning_rate":1.0,
         "lambd":0.1,
-        "network_layers":2,
-        "n_hidden_layer":15        
+        "hidden_layer_dimensions":[15]
     },
     "other":{
-        "iterations":200,
+        "iterations":100,
         "print_cost":true
     }
 }

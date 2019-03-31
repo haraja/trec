@@ -121,43 +121,43 @@ def convert_from_one_hot(Y_one_hot):
     return Y_labels
 
 
-def init_params(n_x, n_y, n_h, network_layers):
-    '''Initializes the parameter sof neural net
-    Initially implemented for neural network with 1 hidden layer only
-    (and one input and one output layer)
+def init_params(layer_dims):
+    '''Initializes the parameter for neural net
 
     Parameters:
-        n_x -- size of input layer, dimension (size) of one input image
-        n_y -- size of output layer, amount of possible labels
-        n_h -- size of all hidden layers
-        network_layers -- number of network layers, excluding input layer
-                          For example with 1 hidden- + output-layer this would be 2
+        layer_dims -- array of neural-network layer dimensions. Notice that this includes all layers.
+                      Size of input layer is size (dimensions) of one sample (one image)
+                      Size of hidden layers depends of configuration. Can have 1..n hidden layers
+                      Size of output layer is number of label categories
+                      Example: [378, 20, 20, 10]
 
     Returns: weight_params -- dictionary containing all weight parameters
         W1 -- weight matrix of layer 1, shape: hidden_layer x input_layer
         b1 -- bias vector of layer 1, shape: hidden_layer x 1
         ...
-        Wn -- weight matrix of layer n, shape output_layer x hidden_layer
-        bn -- bias vector of layer n, shape output_layer x 1
+        Wn
+        bn
     '''
-  
-    assert n_x == 784
-    assert (n_y == 1) or (n_y == 10)    # really bad way to test. This works with binary- and multiclass-classfication
+    assert layer_dims[0] == 784
+    assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
+    
+    np.random.seed(1)
+    weight_params = {}
 
-    np.random.seed()
-    # weight multipliers for hidden layer. 
-    # The np.sqrt... multiplier in the end is 'Xavier initialization'. This helps to avoid vanishing/exploding gradients
-    # ...with relu, this should be np.sqrt(2/n_x)
+    for layer in range(1, layer_dims.size):
+        l_prev = layer_dims[layer - 1]
+        l_current = layer_dims[layer]
+        # np.sqrt... multiplier in the end is 'Xavier initialization'. 
+        # This set the scale of params so that it helps to avoid vanishing/exploding gradients.
+        # With relu, this should be np.sqrt(2/n_x)
+        weight_params['W' + str(layer)] = np.random.rand(l_current, l_prev) * np.sqrt(1/(l_prev))
+        weight_params['b' + str(layer)] = np.zeros((l_current, 1))
 
-    W1 = np.random.rand(n_h, n_x) * np.sqrt(1/n_x)  
-    # weight multipliers for output layer. The np.sqrt... - same comment as above
-    W2 = np.random.rand(n_y, n_h) * np.sqrt(1/n_h)  
-    # b can be 0 in beginning, there is no reason to randomize that
-    b1 = np.zeros((n_h, 1))                 # bias multiplier for hidden layer
-    b2 = np.zeros((n_y, 1))                 # bias multiplier for output layer
+        assert(weight_params['W' + str(layer)].shape == (l_current, l_prev))
+        assert(weight_params['b' + str(layer)].shape == (l_current, 1))
 
-    for i in range(1, n_h):
-        weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
+
+    assert(len(weight_params) == (layer_dims.size - 1) * 2)
 
     return weight_params
 
@@ -166,8 +166,8 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
     '''Forward propagation of the parameters
 
     Parameters:
-    X -- matrix containing images
-    weight_params -- dictionary containing weight parameters
+        X -- matrix containing images
+        weight_params -- dictionary containing weight parameters
 
     Returns:
     dictionary caching the result
@@ -197,10 +197,20 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
     return cache_params
 
 
+def forward_propagation_deep(X, weight_params):
+    '''
+    '''
+    n = len(weight_params / 2)
+    assert(n == 2)
+
+    for i in range(n):
+        ''' '''
+
+
 def compute_cost(Y, A):
     '''Computes cost of for the forward propagation - used with binary classification
 
-    Args:
+    Parameters:
         Y -- true labels
         A -- output of the last layer's activation
 
@@ -237,7 +247,7 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
     '''Backward propagation using gradient descent. 
        Computes delta between true values and computed weighted values
 
-    Args:
+    Parameters:
         X -- input parameters (images)
         Y -- true labels
         weight_params -- weight parameters
@@ -272,33 +282,19 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
 def update_params(weight_params, gradient_params, learning_rate):
     '''Updates weight parameters from the gradient
 
-    Args:
-        X -- input array
+    Parameters:
         weight_params -- dictionary of weight and bias parameters
+        gradient_params -- dictionary of gradienst from backpropagation
+        learning_rate -- learning rate for parameter updates
 
     Returns:
         weight_params -- updated weight and bias parameters
     '''
-
-    # Get weights parameters
-    W1 = weight_params['W1']
-    b1 = weight_params['b1']
-    W2 = weight_params['W2']
-    b2 = weight_params['b2']
-
-    # Get gradient parameters
-    dW1 = gradient_params['dW1']
-    db1 = gradient_params['db1']
-    dW2 = gradient_params['dW2']
-    db2 = gradient_params['db2']
-
-    # Update weight parameters
-    W1 = W1 - dW1 * learning_rate
-    b1 = b1 - db1 * learning_rate
-    W2 = W2 - dW2 * learning_rate
-    b2 = b2 - db2 * learning_rate
-
-    weight_params = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
+    # update all parameters is place:
+    # Wl = Wl + learning_rate * dWl ... and same for bl.
+    for l in range(1, len(weight_params) // 2 + 1):
+        weight_params['W' + str(l)] = weight_params['W' + str(l)] - gradient_params['dW' + str(l)] * learning_rate
+        weight_params['b' + str(l)] = weight_params['b' + str(l)] - gradient_params['db' + str(l)] * learning_rate
 
     return weight_params
 
@@ -319,7 +315,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
-        if i % 100 == 0:
+        if i % 10 == 0:
             print('%.8f' % cost)
         
         costs.append(cost)

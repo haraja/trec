@@ -42,12 +42,16 @@ else:
     
     learning_rate = config['hyperparameters']['learning_rate']
     lambd = config['hyperparameters']['lambd']
-    network_layers = config['hyperparameters']['network_layers']
-    n_hidden_layer = config['hyperparameters']['n_hidden_layer']
+    hidden_layer_dims = np.array(config['hyperparameters']['hidden_layer_dimensions'])
     iterations = config['other']['iterations']
+
+    # n_h_dims only has hidden laer(s) dimension(s). Update this array to describe whole network:
+    # input layer dimension in the beginning, output layer dimension in the end
+    input_and_hidden_layers = np.insert(hidden_layer_dims, 0, X.shape[0])
+    layer_dims = np.append(input_and_hidden_layers, Y.shape[0]) # input + hidden + output layer(s)
     
     start_time = time.time()
-    weight_params = mlfunc.init_params(X.shape[0], Y.shape[0], n_hidden_layer, network_layers)
+    weight_params = mlfunc.init_params(layer_dims)
     weight_params = mlfunc.run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
