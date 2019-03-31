@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 def sigmoid(Z):
     ''' Sigmoid activation function
-    '''
+    ''' 
     return 1 / (1 + np.exp(-Z))
 
 
@@ -197,14 +197,32 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
     return cache_params
 
 
+
 def forward_propagation_deep(X, weight_params):
     '''
-    '''
-    n = len(weight_params / 2)
-    assert(n == 2)
+    '''    
+    cache_params = {}
+    A_prev = X
+    L = len(weight_params) // 2 # number of layer in neural net (excluding input-layer)
+    assert(L == 2)
 
-    for i in range(n):
-        ''' '''
+    for l in range(1, L):
+        W = weight_params['W' + str(l)]
+        b = weight_params['b' + str(l)]
+        Z = np.dot(W, A_prev) + b
+        A = tanh(Z)
+        cache_params['Z' + str(l)] = Z
+        cache_params['A' + str(l)] = A
+        A_prev = A
+
+    W = weight_params['W' + str(L)]
+    b = weight_params['b' + str(L)]
+    Z = np.dot(W, A_prev) + b
+    A = softmax(Z)
+    cache_params['Z' + str(L)] = Z
+    cache_params['A' + str(L)] = A
+
+    return cache_params
 
 
 def compute_cost(Y, A):
@@ -252,6 +270,7 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
         Y -- true labels
         weight_params -- weight parameters
         cache_params -- Z, A, parameters computed during forward propagation
+        lambd -- TODO define this
 
     Returns:
         gradient_params --  parameters of the gradients (weight - derivative)
@@ -290,7 +309,7 @@ def update_params(weight_params, gradient_params, learning_rate):
     Returns:
         weight_params -- updated weight and bias parameters
     '''
-    # update all parameters is place:
+    # update all parameters in place:
     # Wl = Wl + learning_rate * dWl ... and same for bl.
     for l in range(1, len(weight_params) // 2 + 1):
         weight_params['W' + str(l)] = weight_params['W' + str(l)] - gradient_params['dW' + str(l)] * learning_rate
@@ -305,7 +324,8 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
     costs = []
 
     for i in range(iterations):
-        cache_params = forward_propagation(X, weight_params, classification_type)
+        #cache_params = forward_propagation(X, weight_params, classification_type)
+        cache_params = forward_propagation_deep(X, weight_params)
 
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
