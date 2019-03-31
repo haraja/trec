@@ -141,7 +141,9 @@ def init_params(layer_dims):
     assert layer_dims[0] == 784
     assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
     
-    np.random.seed(1)
+    if __debug__:
+        np.random.seed(1)
+
     weight_params = {}
 
     for layer in range(1, layer_dims.size):
@@ -335,16 +337,21 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
-        if i % 10 == 0:
+        if __debug__:
+            print_cadence = 100
+        else:
+            print_cadence = 10
+        if i % print_cadence == 0:
             print('%.8f' % cost)
         
         costs.append(cost)
     
-    plt.plot(costs)
-    plt.ylabel('cost')
-    plt.xlabel('iterations')
-    plt.title("Cost diagram")
-    plt.show()
+    if __debug__:
+        plt.plot(costs)
+        plt.ylabel('cost')
+        plt.xlabel('iterations')
+        plt.title("Cost diagram")
+        plt.show()
     
     return weight_params
 
