@@ -1,17 +1,17 @@
 
 TODO 
 --- next to be considered: ---
--input for single image, check that against learned parameter set
+--clean up main file: read args, read data, pre-process data, train model, aftermath (save data)
+
 --4. different image sizes - meaning different input-array n-size
 
--with -i parameter input the file name - DONE
+
 -support for different image-classes (other than 10 output nodes)
 
 --- other ---
 -different datasets: 
 --CIFAR
   --refer to: "Learning Multiple Layers of Features from Tiny Images", Alex Krizhevsky, 2009.
-  --
 
 
 --- for model ---
@@ -30,3 +30,6 @@ DONE
 --3. resize image to fit 28x28 - DONE
 --L2 regularization - DONE
 --FASHION-MNIST - done
+
+-with -i parameter input the file name - DONE
+-input for single image, check that against learned parameter set

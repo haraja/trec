@@ -141,8 +141,10 @@ def init_params(layer_dims):
     assert layer_dims[0] == 784
     assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
     
-    if __debug__:
-        np.random.seed(1)
+    # TODO: why is next 2 lines working?
+    #if __debug__:
+    #    np.random.seed(1)
+    np.random.seed(1)
 
     weight_params = {}
 
@@ -199,7 +201,6 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
     return cache_params
 
 
-
 def forward_propagation_deep(X, weight_params):
     '''
     '''    
@@ -208,6 +209,8 @@ def forward_propagation_deep(X, weight_params):
     L = len(weight_params) // 2 # number of layer in neural net (excluding input-layer)
     assert(L == 2)
 
+    # Forward propogation for all hidden layers - not for output layer
+    # TODO: difference is only on calculating 'A', so these could be combined better
     for l in range(1, L):
         W = weight_params['W' + str(l)]
         b = weight_params['b' + str(l)]
@@ -217,6 +220,7 @@ def forward_propagation_deep(X, weight_params):
         cache_params['A' + str(l)] = A
         A_prev = A
 
+    # Forward propagation for output layer
     W = weight_params['W' + str(L)]
     b = weight_params['b' + str(L)]
     Z = np.dot(W, A_prev) + b
@@ -229,6 +233,7 @@ def forward_propagation_deep(X, weight_params):
 
 def compute_cost(Y, A):
     '''Computes cost of for the forward propagation - used with binary classification
+    cost = logistic loss
 
     Parameters:
         Y -- true labels
@@ -266,6 +271,7 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
 def backward_propagation(X, Y, weight_params, cache_params, lambd):
     '''Backward propagation using gradient descent. 
        Computes delta between true values and computed weighted values
+       NOTE: Hardcoded to work only with 1 hidded layer
 
     Parameters:
         X -- input parameters (images)
@@ -295,7 +301,74 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
     dW1 = 1/m * np.dot(dZ1, X.T) + lambd / m * W1
     db1 = 1/m * np.sum(dZ1, axis = 1, keepdims = True)
 
+    '''
+    print('dZ2 shape: ' + str(dZ2.shape))
+    print('dW2 shape: ' + str(dW2.shape))
+    print('db2 shape: ' + str(db2.shape))
+    print('dZ1 shape: ' + str(dZ1.shape))
+    print('dW1 shape: ' + str(dW1.shape))
+    print('db1 shape: ' + str(db1.shape))
+    exit(0)
+    '''
+
     gradient_params = {'dW1': dW1, 'db1': db1, 'dW2': dW2, 'db2': db2}
+
+    return gradient_params
+
+
+def backward_propagation_deep(X, Y, weight_params, cache_params, lambd):
+    '''Backward propagation using gradient descent. 
+       Computes delta between true values and computed weighted values
+       NOTE: This version works with all notwork configurations, set on config-file
+
+    Parameters:
+        X -- input parameters (images)
+        Y -- true labels
+        weight_params -- weight parameters
+        cache_params -- Z, A, parameters computed during forward propagation
+        lambd -- TODO define this
+
+    Returns:
+        gradient_params --  parameters of the gradients (weight - derivative)
+    '''
+    gradient_params = {}
+    m = X.shape[1]
+    L = len(weight_params) // 2  # number of layers in neural net, minus one
+    
+    # Calculate derivatives
+    #TODO: In Coursera's course of "Neural Networks and Deep Learning", last week's notebook says:
+    # Use: dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL)) # derivative of cost with respect to AL
+    
+    for l in reversed(range(1, L + 1)):
+        W = weight_params['W' + str(l)]
+        A = cache_params['A' + str(l)]
+
+        if l > 1:
+            A_prev = cache_params['A' + str(l - 1)]
+        else:
+            A_prev = X
+
+        if l == L:
+            dZ = A - Y
+        else:
+            '''
+            print('dZ shape: ' + str(dZ.shape))
+            print('W + 1 shape: ')
+            print(weight_params['W2'].shape)
+            print('W + 1 shape: ' + str(weight_params['W' + str(l+1)].shape))
+            #print('A shape: ' + str(A.shape))
+            '''
+            dZ = np.dot(weight_params['W' + str(l + 1)].T, dZ) * tanh_derivative(A)
+        
+        dW = 1/m * np.dot(dZ, A_prev.T) + lambd / m * W
+        db = 1/m * np.sum(dZ, axis = 1, keepdims = True)
+        '''
+        print('dZ shape: ' + str(dZ.shape))
+        print('dW shape: ' + str(dW.shape))
+        print('db shape: ' + str(db.shape))
+        '''
+        gradient_params['dW' + str(l)] = dW
+        gradient_params['db' + str(l)] = db
 
     return gradient_params
 
@@ -334,13 +407,13 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         else:
             cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
 
-        gradient_params = backward_propagation(X, Y, weight_params, cache_params, lambd)
+        gradient_params = backward_propagation_deep(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
         if __debug__:
             print_cadence = 100
         else:
-            print_cadence = 10
+            print_cadence = 1
         if i % print_cadence == 0:
             print('%.8f' % cost)
         
