@@ -164,14 +164,13 @@ def init_params(layer_dims):
         l_prev = layer_dims[layer - 1]
         l_current = layer_dims[layer]
         # np.sqrt... multiplier in the end is 'Xavier initialization'. 
-        # This set the scale of params so that it helps to avoid vanishing/exploding gradients.
+        # This set the scale of params to avoid vanishing/exploding gradients.
         # With relu, this should be np.sqrt(2/n_x)
         weight_params['W' + str(layer)] = np.random.rand(l_current, l_prev) * np.sqrt(1/(l_prev))
         weight_params['b' + str(layer)] = np.zeros((l_current, 1))
 
         assert(weight_params['W' + str(layer)].shape == (l_current, l_prev))
         assert(weight_params['b' + str(layer)].shape == (l_current, 1))
-
 
     assert(len(weight_params) == (layer_dims.size - 1) * 2)
 

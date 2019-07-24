@@ -19,17 +19,17 @@ http://yann.lecun.com/exdb/mnist/
 
 ## Status
 This project is work in progress. Some implementation details:
--Only one hidden layer is initially supported. Implementation of deeper networks ongoing.
--Cost is minimized with gradient descent algorithm
+- Only one hidden layer is initially supported. Implementation of deeper networks ongoing.
+- Cost is minimized with gradient descent algorithm
 
 ## Structure
--trec.py: this is the script which be run by you. Will call all other needed functions on other files. 
+- trec.py: this is the script which be run by you. Will call all other needed functions on other files. 
 Parses the command line parameters, gets the data, runs the model
--helpers.py: general helper functions
--mlfunc.py: machine learning related functions
+- helpers.py: general helper functions
+- mlfunc.py: machine learning related functions
 
 ## Code notation
-X: input array
-Y: marks labels
-training_set: st used to train the model (X, Y in code are training sets)
-*_test: set used to evaluate correctness of trained model
+- X: input array
+- Y: marks labels
+- training_set: st used to train the model (X, Y in code are training sets)
+- *_test: set used to evaluate correctness of trained model
