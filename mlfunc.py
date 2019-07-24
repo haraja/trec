@@ -154,6 +154,8 @@ def init_params(layer_dims):
     # TODO: why is next 2 lines working?
     #if __debug__:
     #    np.random.seed(1)
+    
+    # TODO: randomize this is final implementation
     np.random.seed(1)
 
     weight_params = {}
@@ -289,7 +291,6 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
 
 def compute_cost_softmax_deep(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
-    NOTE: This version works with all notwork configurations, set on config-file
     TODO: Implement
     '''
     m = Y.shape[1]

@@ -2,10 +2,13 @@
 Program to recognize handwritten characters
 
 ## Why trec?
-To practice implementing deep neural network, to be used in learning characters.
-All algorithms are written from the scratch. Readily available libraries are
-used primarily for matrix operations. Target is to work with big dataset, so
-usage of for-loops is avoided and instead matrix-operations are preferred.
+To practice implementing deep neural network.
+Trec is To be used in learning to recognize images - initilly characters.
+Although all algorithms are written from the scratch, math itself on the
+activation functions, propagations etc. are from wiser people.
+Readily available libraries are used primarily for matrix operations (numpy).
+Target is to work with big dataset, so usage of for-loops is avoided 
+and instead matrix-operations are preferred in implementation.
 
 ## Getting started
 Needed data of the character-sets, which is used for learning, is from MNIST.
@@ -16,7 +19,7 @@ http://yann.lecun.com/exdb/mnist/
 
 ## Status
 This project is work in progress. Some implementation details:
--Only one hidden layer is initially supported
+-Only one hidden layer is initially supported. Implementation of deeper networks ongoing.
 -Cost is minimized with gradient descent algorithm
 
 ## Structure
