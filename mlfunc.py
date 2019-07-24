@@ -138,8 +138,18 @@ def init_params(layer_dims):
         Wn
         bn
     '''
-    assert layer_dims[0] == 784
-    assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
+
+    '''
+    print('layer_dims: ')
+    print(len(layer_dims))
+    for i in range(len(layer_dims)):
+        print(layer_dims[i])
+    exit(0)
+    '''
+    
+    assert layer_dims[0] == 784                     # input layer - only works with images which have 784 (28x28) pixels
+    assert layer_dims[len(layer_dims) - 1] == 10    # output layer
+    #assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
     
     # TODO: why is next 2 lines working?
     #if __debug__:
@@ -163,6 +173,9 @@ def init_params(layer_dims):
 
     assert(len(weight_params) == (layer_dims.size - 1) * 2)
 
+#    print('weight params:')
+#    print(weight_params)
+#    exit(0)
     return weight_params
 
 
@@ -253,8 +266,14 @@ def compute_cost(Y, A):
 
 def compute_cost_softmax(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
+    NOTE: Hardcoded to work only with 1 hidded layer
     '''
     m = Y.shape[1]
+    #print('Y shape:')
+    #print(Y.shape)
+    #print('A shape:')
+    #print(A.shape)
+
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
     non_regularized_cost = 1/m * np.sum(log_calc)
 
@@ -266,6 +285,33 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
     assert(isinstance(cost, float))
 
     return cost
+
+
+def compute_cost_softmax_deep(Y, A, weight_params, lambd):
+    ''' Computes cost with softmax - used with multiclass classification on last layer
+    NOTE: This version works with all notwork configurations, set on config-file
+    TODO: Implement
+    '''
+    m = Y.shape[1]
+    #print('Y shape:')
+    #print(Y.shape)
+    #print('A shape:')
+    #print(A.shape)
+
+    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
+    non_regularized_cost = 1/m * np.sum(log_calc)
+
+    ''' regularization to be updated with many hidden layers
+    W1 = weight_params['W1']
+    W2 = weight_params['W2']
+    l2_regularization_cost = 1/m * lambd/2 * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
+    
+    cost = non_regularized_cost + l2_regularization_cost
+    assert(isinstance(cost, float))
+
+    return cost
+    '''
+    return non_regularized_cost
 
 
 def backward_propagation(X, Y, weight_params, cache_params, lambd):
@@ -405,7 +451,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
         else:
-            cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
+            cost = compute_cost_softmax_deep(Y, cache_params['A2'], weight_params, lambd)
 
         gradient_params = backward_propagation_deep(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
@@ -413,7 +459,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         if __debug__:
             print_cadence = 100
         else:
-            print_cadence = 1
+            print_cadence = 10
         if i % print_cadence == 0:
             print('%.8f' % cost)
         
