@@ -27,9 +27,3 @@ This project is work in progress. Some implementation details:
 Parses the command line parameters, gets the data, runs the model
 - helpers.py: general helper functions
 - mlfunc.py: machine learning related functions
-
-## Code notation
-- X: input array
-- Y: marks labels
-- training_set: st used to train the model (X, Y in code are training sets)
-- *_test: set used to evaluate correctness of trained model
