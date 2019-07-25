@@ -18,7 +18,7 @@ http://yann.lecun.com/exdb/mnist/
 
 
 ## Status
-This project is work in progress. Some implementation details:
+This project is work in progress. To use working SW, get latest released version. Some implementation details:
 - Only one hidden layer is initially supported. Implementation of deeper networks ongoing.
 - Cost is minimized with gradient descent algorithm
 

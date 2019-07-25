@@ -223,8 +223,9 @@ def forward_propagation_deep(X, weight_params):
     L = len(weight_params) // 2 # number of layer in neural net (excluding input-layer)
     assert(L == 2)
 
+    # TODO: on earlier layer and output layer, difference is only on calculating 'A', so next sections could be combined better
+
     # Forward propogation for all hidden layers - not for output layer
-    # TODO: difference is only on calculating 'A', so these could be combined better
     for l in range(1, L):
         W = weight_params['W' + str(l)]
         b = weight_params['b' + str(l)]
