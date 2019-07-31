@@ -163,8 +163,8 @@ def init_params(layer_dims):
     for layer in range(1, layer_dims.size):
         l_prev = layer_dims[layer - 1]
         l_current = layer_dims[layer]
-        # np.sqrt... multiplier in the end is 'Xavier initialization'. 
-        # This set the scale of params to avoid vanishing/exploding gradients.
+        # np.sqrt... multiplier in the end is 'Xavier initialization',
+        # multiplier to  set the scale of params to avoid vanishing/exploding gradients.
         # With relu, this should be np.sqrt(2/n_x)
         weight_params['W' + str(layer)] = np.random.rand(l_current, l_prev) * np.sqrt(1/(l_prev))
         weight_params['b' + str(layer)] = np.zeros((l_current, 1))
@@ -216,8 +216,15 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
 
 
 def forward_propagation_deep(X, weight_params):
-    '''
-    '''    
+    '''Forward propagation of the parameters
+
+    Parameters:
+        X -- matrix containing images
+        weight_params -- dictionary containing weight parameters
+
+    Returns:
+    dictionary caching the result
+    '''  
     cache_params = {}
     A_prev = X
     L = len(weight_params) // 2 # number of layer in neural net (excluding input-layer)
@@ -299,6 +306,8 @@ def compute_cost_softmax_deep(Y, A, weight_params, lambd):
     #print('A shape:')
     #print(A.shape)
 
+    # TODO: Check should to log_calc be instead?:
+    #log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
     log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
     non_regularized_cost = 1/m * np.sum(log_calc)
 
@@ -458,7 +467,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
         if __debug__:
-            print_cadence = 100
+            print_cadence = 10
         else:
             print_cadence = 10
         if i % print_cadence == 0:
