@@ -288,7 +288,7 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
 
     W1 = weight_params['W1']
     W2 = weight_params['W2']
-    l2_regularization_cost = 1/m * lambd/2 * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
+    l2_regularization_cost = 1/m * lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
     
     cost = non_regularized_cost + l2_regularization_cost
     assert(isinstance(cost, float))
@@ -314,7 +314,7 @@ def compute_cost_softmax_deep(Y, A, weight_params, lambd):
     ''' regularization to be updated with many hidden layers
     W1 = weight_params['W1']
     W2 = weight_params['W2']
-    l2_regularization_cost = 1/m * lambd/2 * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
+    l2_regularization_cost = 1/m * lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
     
     cost = non_regularized_cost + l2_regularization_cost
     assert(isinstance(cost, float))
@@ -461,7 +461,7 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
         if classification_type == Classification.BINARY:
             cost = compute_cost(Y, cache_params['A2'])
         else:
-            cost = compute_cost_softmax_deep(Y, cache_params['A2'], weight_params, lambd)
+            cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
 
         gradient_params = backward_propagation_deep(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
