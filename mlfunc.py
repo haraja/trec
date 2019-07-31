@@ -295,7 +295,7 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
     W1 = weight_params['W1']
     W2 = weight_params['W2']
     # regularized with L2-regularization
-    l2_regularization_cost = 1/m * lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
+    l2_regularization_cost = lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
     
     cost = non_regularized_cost + l2_regularization_cost
     assert(isinstance(cost, float))
