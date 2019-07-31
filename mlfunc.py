@@ -341,7 +341,7 @@ def backward_propagation(X, Y, weight_params, cache_params, lambd):
         Y -- true labels
         weight_params -- weight parameters
         cache_params -- Z, A, parameters computed during forward propagation
-        lambd -- TODO define this
+        lambd -- regularization parameter
 
     Returns:
         gradient_params --  parameters of the gradients (weight - derivative)
@@ -389,7 +389,7 @@ def backward_propagation_deep(X, Y, weight_params, cache_params, lambd):
         Y -- true labels
         weight_params -- weight parameters
         cache_params -- Z, A, parameters computed during forward propagation
-        lambd -- TODO define this
+        lambd -- regularization parameter
 
     Returns:
         gradient_params --  parameters of the gradients (weight - derivative)
