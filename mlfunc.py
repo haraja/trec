@@ -276,6 +276,12 @@ def compute_cost(Y, A):
 def compute_cost_softmax(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
     NOTE: Hardcoded to work only with 1 hidded layer
+
+    Parameters:
+        Y -- true labels
+        A -- output of the last layer's activation
+        weight_params -- dicrionary of all layers' weight parameters
+        lamd -- regularization parameter
     '''
     m = Y.shape[1]
     #print('Y shape:')
@@ -288,6 +294,7 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
 
     W1 = weight_params['W1']
     W2 = weight_params['W2']
+    # regularized with L2-regularization
     l2_regularization_cost = 1/m * lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
     
     cost = non_regularized_cost + l2_regularization_cost
