@@ -1,12 +1,8 @@
 
 TODO 
 --- next to be considered: ---
---clean up main file: read args, read data, pre-process data, train model, aftermath (save data)
-
 --4. different image sizes - meaning different input-array n-size
-
-
--support for different image-classes (other than 10 output nodes)
+--support for different image-classes (other than 10 output nodes)
 
 --- other ---
 -different datasets: 
@@ -16,9 +12,8 @@ TODO
 
 --- for model ---
 -to reduce overfitting (test set does not get closer to learning set after a few thousand iterations):
-
 --drop-out regularization
--support for more layers in neural next
+-support for more layers in neural next - implementation ongoing
 -fix relU functions - does not work currently?
 -remove hardcodings from data read & array sizes
 -ADAM-algorithm for backpropagation
@@ -30,6 +25,5 @@ DONE
 --3. resize image to fit 28x28 - DONE
 --L2 regularization - DONE
 --FASHION-MNIST - done
-
--with -i parameter input the file name - DONE
--input for single image, check that against learned parameter set
+--with -i parameter input the file name - DONE
+--input for single image, check that against learned parameter set

@@ -265,8 +265,8 @@ def compute_cost(Y, A):
         cost
     '''
     m = Y.shape[1]
-    log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
-    cost = -1/m * np.sum(log_calc)
+    log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))  # loss function
+    cost = -1/m * np.sum(log_calc)                                              # cost function
     cost = np.squeeze(cost)
     assert(isinstance(cost, float))
 
@@ -289,8 +289,8 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
     #print('A shape:')
     #print(A.shape)
 
-    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
-    non_regularized_cost = 1/m * np.sum(log_calc)
+    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)   # loss function
+    non_regularized_cost = 1/m * np.sum(log_calc)           # cost function
 
     W1 = weight_params['W1']
     W2 = weight_params['W2']
@@ -313,12 +313,10 @@ def compute_cost_softmax_deep(Y, A, weight_params, lambd):
     #print('A shape:')
     #print(A.shape)
 
-    # TODO: Check should to log_calc be instead?:
-    #log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))
-    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)
-    non_regularized_cost = 1/m * np.sum(log_calc)
+    log_calc = -np.sum(np.multiply(np.log(A), Y), axis=0)   # loss function
+    non_regularized_cost = 1/m * np.sum(log_calc)           # cost function
 
-    ''' regularization to be updated with many hidden layers
+    ''' TODO: regularization to be updated with many hidden layers
     W1 = weight_params['W1']
     W2 = weight_params['W2']
     l2_regularization_cost = 1/m * lambd/(2*m) * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
