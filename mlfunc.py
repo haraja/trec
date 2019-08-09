@@ -3,7 +3,6 @@ Machine learning functions
 '''
 
 import numpy as np
-from enums import Classification
 import matplotlib.pyplot as plt
 
 
@@ -149,9 +148,8 @@ def init_params(layer_dims):
     
     assert layer_dims[0] == 784                     # input layer - only works with images which have 784 (28x28) pixels
     assert layer_dims[len(layer_dims) - 1] == 10    # output layer
-    #assert (layer_dims[2] == 1) or (layer_dims[2] == 10)    # really bad way to test. This works with binary- and multiclass-classfication
     
-    # TODO: why is next 2 lines working?
+    # TODO: why are next 2 linesnot  working?
     #if __debug__:
     #    np.random.seed(1)
     
@@ -180,8 +178,9 @@ def init_params(layer_dims):
     return weight_params
 
 
-def forward_propagation(X, weight_params, classification_type=Classification.MULTICLASS):
+def forward_propagation(X, weight_params):
     '''Forward propagation of the parameters
+    This function is for neural net with fixed 1 hidden layer
 
     Parameters:
         X -- matrix containing images
@@ -198,11 +197,7 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
     Z1 = np.dot(W1, X) + b1
     A1 = tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
-
-    if classification_type == Classification.BINARY:
-        A2 = sigmoid(Z2)
-    else:
-        A2 = softmax(Z2)    # for multiclass classification
+    A2 = softmax(Z2)
 
     m = X[1].size # number of samples
     assert Z1.shape == (len(W1), m)
@@ -217,6 +212,7 @@ def forward_propagation(X, weight_params, classification_type=Classification.MUL
 
 def forward_propagation_deep(X, weight_params):
     '''Forward propagation of the parameters
+    This function is for deep neural network with varying depth
 
     Parameters:
         X -- matrix containing images
@@ -253,29 +249,9 @@ def forward_propagation_deep(X, weight_params):
     return cache_params
 
 
-def compute_cost(Y, A):
-    '''Computes cost of for the forward propagation - used with binary classification
-    cost = logistic loss
-
-    Parameters:
-        Y -- true labels
-        A -- output of the last layer's activation
-
-    Returns:
-        cost
-    '''
-    m = Y.shape[1]
-    log_calc = np.multiply(np.log(A), Y) + np.multiply(np.log(1 - A), (1 - Y))  # loss function
-    cost = -1/m * np.sum(log_calc)                                              # cost function
-    cost = np.squeeze(cost)
-    assert(isinstance(cost, float))
-
-    return cost
-
-
 def compute_cost_softmax(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
-    NOTE: Hardcoded to work only with 1 hidded layer
+    This function is for neural net with fixed 1 hidden layer
 
     Parameters:
         Y -- true labels
@@ -305,7 +281,7 @@ def compute_cost_softmax(Y, A, weight_params, lambd):
 
 def compute_cost_softmax_deep(Y, A, weight_params, lambd):
     ''' Computes cost with softmax - used with multiclass classification on last layer
-    TODO: Implement
+    This function is for deep neural network with varying depth
     '''
     m = Y.shape[1]
     #print('Y shape:')
@@ -454,20 +430,15 @@ def update_params(weight_params, gradient_params, learning_rate):
     return weight_params
 
 
-def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type):
+def run_model(X, Y, weight_params, iterations, learning_rate, lambd):
     print('Cost:')
     cost = 0
     costs = []
 
     for i in range(iterations):
-        #cache_params = forward_propagation(X, weight_params, classification_type)
+        #cache_params = forward_propagation(X, weight_params)
         cache_params = forward_propagation_deep(X, weight_params)
-
-        if classification_type == Classification.BINARY:
-            cost = compute_cost(Y, cache_params['A2'])
-        else:
-            cost = compute_cost_softmax(Y, cache_params['A2'], weight_params, lambd)
-
+        cost = compute_cost_softmax_deep(Y, cache_params['A2'], weight_params, lambd)
         gradient_params = backward_propagation_deep(X, Y, weight_params, cache_params, lambd)
         weight_params = update_params(weight_params, gradient_params, learning_rate)
 
@@ -490,21 +461,17 @@ def run_model(X, Y, weight_params, iterations, learning_rate, lambd, classificat
     return weight_params
 
 
-def predict(X, weight_params, classification_type):
+def predict(X, weight_params):
     '''
     '''
-    cache = forward_propagation(X, weight_params, classification_type)
+    cache = forward_propagation(X, weight_params)
     A2 = cache['A2']
 
-    if classification_type == Classification.BINARY:
-        # Binary classification: if value > 0.5, this is considered to be the match -> set to 1
-        predictions = np.round(A2)
-    else:
-        # Multiclass classification: the biggest number in each 'softmax-column' is the most likely match
-        # -> here predictions will be n x m array, each column being one-hot vector
-        predictions = np.argmax(A2, axis=0)
-        predictions.shape = (1, predictions.size)
-        predictions = convert_to_one_hot(predictions)
+    # Multiclass classification: the biggest number in each 'softmax-column' is the most likely match
+    # -> here predictions will be n x m array, each column being one-hot vector
+    predictions = np.argmax(A2, axis=0)
+    predictions.shape = (1, predictions.size)
+    predictions = convert_to_one_hot(predictions)
 
     return predictions
 
@@ -518,17 +485,9 @@ def check_accuracy(Y, predictions):
     correct_prediction = 0
     m = Y.shape[1]
 
-    if Y.shape[0] == 1: # Binary classification
-        print('Binary Classification')
-        for i in range(m):
-            # Notice that % indicates not only true positives, but also true negatives
-            if Y[0,i] == predictions[0,i]:
-                correct_prediction += 1
-    else: # Multiclass classification
-        print('Multiclass Classification')
-        for i in range(m):
-            if np.array_equal(Y[:,i], predictions[:,i]):
-                correct_prediction += 1
+    for i in range(m):
+        if np.array_equal(Y[:,i], predictions[:,i]):
+            correct_prediction += 1
         
     accuracy = correct_prediction / m *100
     #print('total samples: ' + str(m))

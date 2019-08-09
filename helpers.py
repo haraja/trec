@@ -49,7 +49,7 @@ def show_number(number_array, label_array, index):
     plt.show()
 
 
-def mnist_to_array(classification_type):
+def mnist_to_array():
     ''' reads data from mnist-files and returns in suitable numpy array
 
     Return:
@@ -84,15 +84,9 @@ def mnist_to_array(classification_type):
     Y.shape = (1, Y.size)
     Y_test.shape = (1, Y_test.size)
 
-    if classification_type == Classification.BINARY:
-        Y[Y != 5] = 0
-        Y[Y == 5] = 1
-        Y_test[Y_test != 5] = 0
-        Y_test[Y_test == 5] = 1
-    else:
-        # shape the output from labels to arrays, for multiclass classification
-        Y = mlfunc.convert_to_one_hot(Y)
-        Y_test = mlfunc.convert_to_one_hot(Y_test)
+    # shape the output from labels to arrays
+    Y = mlfunc.convert_to_one_hot(Y)
+    Y_test = mlfunc.convert_to_one_hot(Y_test)
 
     #show_number(X, Y, np.random.randint(0, Y.size))
 

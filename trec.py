@@ -1,5 +1,4 @@
 import numpy as np
-from enums import Classification
 import helpers
 import mlfunc
 import sys
@@ -7,7 +6,6 @@ import argparse
 import time
 import pickle
 import matplotlib.pyplot as plt
-from enums import Classification
 import json
 
 
@@ -15,22 +13,15 @@ with open('config.json') as f:
     config = json.load(f)
 
 # Read command line arguments
-#   binary classification: only learns single value from training data, and predicts only that single value
-#   multiclass classification lears all numbers from training data and predicts any number value
 parser = argparse.ArgumentParser(description='Harris machine learning script.')
-parser.add_argument('-bc', action='store_true', dest='bin_classification', help='binary classification')
 parser.add_argument('-s', action='store_true', dest='store_params', help='store learned params to file')
 parser.add_argument('-r', action='store_true', dest='read_params', help='read learned parameters from file')
 parser.add_argument('-i', type=str, dest='file_name', help='evaluate image [FILE_NAME] against learned parameter set')
 #parser.add_argument('-i', action='store_true', dest='image_input', help='evaluate input_image.jpg against learned parameter set')
 args = parser.parse_args()
 
-classification_type = Classification.MULTICLASS
-if args.bin_classification == True:
-    classification_type = Classification.BINARY
-
 # Get all training- and test-datasets, as numpy-arrays from mnist-data
-X, X_test, Y, Y_test = helpers.mnist_to_array(classification_type)
+X, X_test, Y, Y_test = helpers.mnist_to_array()
 #helpers.show_number(X, mlfunc.convert_from_one_hot(Y), 2)
 
 if args.read_params or args.file_name:
@@ -45,14 +36,14 @@ else:
     hidden_layer_dims = np.array(config['hyperparameters']['hidden_layer_dimensions'])
     iterations = config['other']['iterations']
 
-    # n_h_dims only has hidden laer(s) dimension(s). Update this array to describe whole network:
+    # n_h_dims only has hidden layer(s) dimension(s). Update this array to describe whole network:
     # input layer dimension in the beginning, output layer dimension in the end
     input_and_hidden_layers = np.insert(hidden_layer_dims, 0, X.shape[0])
     layer_dims = np.append(input_and_hidden_layers, Y.shape[0]) # input + hidden + output layer(s)
     
     start_time = time.time()
     weight_params = mlfunc.init_params(layer_dims)
-    weight_params = mlfunc.run_model(X, Y, weight_params, iterations, learning_rate, lambd, classification_type)
+    weight_params = mlfunc.run_model(X, Y, weight_params, iterations, learning_rate, lambd)
     end_time = time.time()
     print('time elapsed: ' + str(end_time - start_time))
 
@@ -71,11 +62,11 @@ if args.file_name:
     #print(X_from_input)
 else:
     print('TRAINING SET')
-    predictions = mlfunc.predict(X, weight_params, classification_type)
+    predictions = mlfunc.predict(X, weight_params)
     mlfunc.check_accuracy(Y, predictions)
     #print('predictions mean = ' + str(np.mean(predictions)))
     print('TEST SET')
-    predictions = mlfunc.predict(X_test, weight_params, classification_type)
+    predictions = mlfunc.predict(X_test, weight_params)
     mlfunc.check_accuracy(Y_test, predictions)
 
 if args.store_params == True:
